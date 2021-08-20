@@ -39,8 +39,7 @@ classAlarm = function() constructor{//Выступает одновременн�
 	get = function(){return alarm_get_difference(this);}//Сколько осталось времени до срабатывания будильника
 	
 	set_destroy = function(destroyed){return alarm_set_destroy(this, destroyed);}//
-	set_loop = function(){}
-	set_sync = function(){}
+	set_loop = function(loop){this.loop = loop;}
 	
 	get_lost = function(){return alarm_get_lost(this);}
 	get_duration = function(){return alarm_get_duration(this);}
