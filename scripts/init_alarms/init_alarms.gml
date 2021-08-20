@@ -1,20 +1,23 @@
 //Синхронные и асинхронные будильники V3.1
 
+if (variable_global_exists("__alarms")) exit;
+
 //https://vk.com/clubgamemakerpro
 //Асинхронные будильники отличаются от синхронных, тем что не зависят от fps
 //Колбэк - это функция, которая произойдёт при активации будильника
 //Синхронные будильники задаются в шагах игры, асинхронные в милисекундах(в секунде - 1000 милисекунд)
 
-globalvar _alarms, _alarmsSync, _alarmsAsync, _minSync, _minAsync, _time, classAlarm;
-_alarms=ds_map_create();//Все будильники
-_alarmsSync=ds_priority_create();//Активные синхронные будильники
-_minSync=0;//Следующий синхронный будильник(Время)
-_alarmsAsync=ds_priority_create();//Асинхронные синхронные будильники
-_minAsync=0;//Следующий асинхронный будильник(Время)
-_time=0;//Кол-во итераций alarm_update
-	
+globalvar __alarms, __alarmsSync, __alarmsAsync, __minSync, __minAsync, __time;
+__alarms = ds_map_create(); // Все будильники
+__alarmsSync = ds_priority_create(); // Активные синхронные будильники
+__minSync = 0; // Следующий синхронный будильник(Время)
+__alarmsAsync = ds_priority_create(); // Асинхронные синхронные будильники
+__minAsync = 0; // Следующий асинхронный будильник(Время)
+__time = 0; // Кол-во итераций alarm_update
+
 //Создаём "Класс" будильника:
-classAlarm = function() constructor{//Выступает одновременно в виде будильника и таймера
+function classAlarm() constructor {//Выступает одновременно в виде будильника и таймера
+	
 	status = false; //true - Работает, false - остановлен
 	time = 0; //Время, когда сработает будильник
 	timeSet = 0; //Через какое время будильник сработает(Каждые ...)
@@ -60,10 +63,14 @@ classAlarm = function() constructor{//Выступает одновременн�
 	timer_reset = function(argTime){return alarm_timer_reset(this, argTime);}//Очистить таймер и установить его значение
 	
 	del = function(){return alarm_delete(this);}//Удалить будильник
+	
+	static settings = function() {
 		
-	settings = function(setting){//Функция для установки настроек будильника
-		return alarm_settings(this, setting);
-	};
+		init_alarms();
+		return method(undefined, function(_setting) {
+			return alarm_settings(self, _setting);
+		});
+	}();
 }
 
 function alarm_settings(_alarm, _settings){
@@ -88,7 +95,7 @@ function alarm_settings(_alarm, _settings){
 				break;
 			}
 			case "time":{
-				alarm_set_duration(_alarm, value - _time);
+				alarm_set_duration(_alarm, value - __time);
 				break;
 			}
 			case "timeSet":{

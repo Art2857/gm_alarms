@@ -1,3 +1,4 @@
+
 //https://vk.com/clubgamemakerpro
 /*
 Параметры(Только для чтения):
@@ -47,7 +48,7 @@ function alarm_create(/*{setting}*/){
 	_alarm.object = self;
 	_alarm.data = undefined;
 	
-	ds_map_add(_alarms, _alarm.name, _alarm);
+	ds_map_add(__alarms, _alarm.name, _alarm);
 	
 	if(argument_count>0){//Если при создании были указны настройки в структуре
 		_alarm.settings(argument[0]);//то применяем их к ново-созданному будильнику
@@ -60,9 +61,9 @@ function alarm_create(/*{setting}*/){
 //Удаляет будильник
 function alarm_delete(thisAlarm){
 	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	ds_priority_delete_value(_alarmsSync, thisAlarm);
-	ds_priority_delete_value(_alarmsAsync, thisAlarm);
-	ds_map_delete(_alarms, thisAlarm.name);
+	ds_priority_delete_value(__alarmsSync, thisAlarm);
+	ds_priority_delete_value(__alarmsAsync, thisAlarm);
+	ds_map_delete(__alarms, thisAlarm.name);
 	delete thisAlarm;
 }
 //https://vk.com/clubgamemakerpro
@@ -70,13 +71,13 @@ function alarm_delete(thisAlarm){
 //Проверяем на существование будильник по его имени
 function alarm_exists(thisAlarm){
 	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	return !is_undefined(_alarms[?thisAlarm]);
+	return !is_undefined(__alarms[?thisAlarm]);
 }
 //https://vk.com/clubgamemakerpro
 
 //Возвращает структуру будильника по его установленному имени
 function alarm_find(name){
-	return _alarms[?name];
+	return __alarms[?name];
 }
 //https://vk.com/clubgamemakerpro
 
@@ -86,7 +87,7 @@ function alarm_get_difference(thisAlarm){
 	with(thisAlarm){
 		if(status){
 			if(sync){
-				return time-_time;
+				return time-__time;
 			}else{
 				return time-current_time;
 			}
@@ -119,7 +120,7 @@ function alarm_get_lost(thisAlarm){
 	with(thisAlarm){
 		if(status){
 			if(sync){
-				return max(0, time-_time);
+				return max(0, time-__time);
 			}else{
 				return max(0, time-current_time);
 			}
@@ -151,22 +152,22 @@ function alarm_resume(thisAlarm){
 		if (!status){
 			status=true; 
 			if(sync){
-				time+=_time-timePoint;
-				timePoint=_time;
-				if(time<_minSync){_minSync=time;}
-				if(is_undefined(ds_priority_find_priority(_alarmsSync, thisAlarm))){
-					ds_priority_add(_alarmsSync, thisAlarm, time);
+				time+=__time-timePoint;
+				timePoint=__time;
+				if(time<__minSync){__minSync=time;}
+				if(is_undefined(ds_priority_find_priority(__alarmsSync, thisAlarm))){
+					ds_priority_add(__alarmsSync, thisAlarm, time);
 				}else{
-					ds_priority_change_priority(_alarmsSync, thisAlarm, time);
+					ds_priority_change_priority(__alarmsSync, thisAlarm, time);
 				}
 			}else{
 				time+=current_time-timePoint;
 				timePoint=current_time;
-				if(time<_minAsync){_minAsync=time;}
-				if(is_undefined(ds_priority_find_priority(_alarmsAsync, thisAlarm))){
-					ds_priority_add(_alarmsAsync, thisAlarm, time);
+				if(time<__minAsync){__minAsync=time;}
+				if(is_undefined(ds_priority_find_priority(__alarmsAsync, thisAlarm))){
+					ds_priority_add(__alarmsAsync, thisAlarm, time);
 				}else{
-					ds_priority_change_priority(_alarmsAsync, thisAlarm, time);
+					ds_priority_change_priority(__alarmsAsync, thisAlarm, time);
 				}
 			}
 		}
@@ -180,16 +181,16 @@ function alarm_set_duration(thisAlarm, argTime){
 	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
 	with(thisAlarm){
 		if(sync){
-			time=_time+argTime;
-			if(time<_minSync){_minSync=time;}
-			if(!is_undefined(ds_priority_find_priority(_alarmsSync, thisAlarm))){
-				ds_priority_change_priority(_alarmsSync, thisAlarm, time);
+			time=__time+argTime;
+			if(time<__minSync){__minSync=time;}
+			if(!is_undefined(ds_priority_find_priority(__alarmsSync, thisAlarm))){
+				ds_priority_change_priority(__alarmsSync, thisAlarm, time);
 			}
 		}else{
 			time=current_time+argTime;
-			if(time<_minAsync){_minAsync=time;}
-			if(!is_undefined(ds_priority_find_priority(_alarmsAsync, thisAlarm))){
-				ds_priority_change_priority(_alarmsAsync, thisAlarm, time);
+			if(time<__minAsync){__minAsync=time;}
+			if(!is_undefined(ds_priority_find_priority(__alarmsAsync, thisAlarm))){
+				ds_priority_change_priority(__alarmsAsync, thisAlarm, time);
 			}
 		}
 		timeSet=argTime; 
@@ -224,16 +225,16 @@ function alarm_get_done(thisAlarm){
 function alarm_set_name(thisAlarm, argName){
 	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
 	with(thisAlarm){
-		ds_map_delete(_alarms, name);
-		ds_map_add(_alarms, argName, thisAlarm);
+		ds_map_delete(__alarms, name);
+		ds_map_add(__alarms, argName, thisAlarm);
 		
 		if(status){
 			if(sync){
-				ds_priority_delete_value(_alarmsSync, thisAlarm);
-				ds_priority_add(_alarmsSync, thisAlarm, time);
+				ds_priority_delete_value(__alarmsSync, thisAlarm);
+				ds_priority_add(__alarmsSync, thisAlarm, time);
 			}else{
-				ds_priority_delete_value(_alarmsAsync, thisAlarm);
-				ds_priority_add(_alarmsAsync, thisAlarm, time);
+				ds_priority_delete_value(__alarmsAsync, thisAlarm);
+				ds_priority_add(__alarmsAsync, thisAlarm, time);
 			}
 		}
 		name=argName;
@@ -248,11 +249,11 @@ function alarm_set_sync(thisAlarm, argSync, argTime){
 	with(thisAlarm){
 		if(argTime!=undefined){
 			if(argSync){
-				time=_time+argTime;
-				if(time<_minSync){_minSync=time;}
+				time=__time+argTime;
+				if(time<__minSync){__minSync=time;}
 			}else{
 				time=current_time+argTime;
-				if(time<_minAsync){_minAsync=time;}
+				if(time<__minAsync){__minAsync=time;}
 			}
 			timeSet=argTime;
 		}
@@ -260,9 +261,9 @@ function alarm_set_sync(thisAlarm, argSync, argTime){
 		
 		if(status){
 			if(argSync){
-				ds_priority_delete_value(_alarmsAsync, thisAlarm);
+				ds_priority_delete_value(__alarmsAsync, thisAlarm);
 			}else{
-				ds_priority_delete_value(_alarmsSync, thisAlarm);
+				ds_priority_delete_value(__alarmsSync, thisAlarm);
 			}
 		}
 	}
@@ -277,13 +278,13 @@ function alarm_stop(thisAlarm){
 		if (status){
 			status=false;
 			if(sync){
-				timer+=_time-timePoint;
-				timePoint=_time;
-				ds_priority_delete_value(_alarmsSync, thisAlarm);
+				timer+=__time-timePoint;
+				timePoint=__time;
+				ds_priority_delete_value(__alarmsSync, thisAlarm);
 			}else{
 				timer+=current_time-timePoint;
 				timePoint=current_time;
-				ds_priority_delete_value(_alarmsAsync, thisAlarm);
+				ds_priority_delete_value(__alarmsAsync, thisAlarm);
 			}
 		}
 	}
@@ -302,7 +303,7 @@ function alarm_timer_clear(thisAlarm){
 	with(thisAlarm){
 		timer=0;
 		if(sync){
-			timePoint=_time;
+			timePoint=__time;
 		}else{
 			timePoint=current_time;
 		}
@@ -317,7 +318,7 @@ function alarm_timer_get(thisAlarm){
 	with(thisAlarm){
 		if(status){
 			if(sync){
-				return timer+(_time-timePoint);
+				return timer+(__time-timePoint);
 			}else{
 				return timer+(current_time-timePoint);
 			}
@@ -343,33 +344,33 @@ function alarm_timer_reset(thisAlarm){
 
 //Остановить все будильники
 function alarms_all_stop(){
-	var key=ds_map_find_first(_alarms);
-	repeat ds_map_size(_alarms){
-		if(alarm_exists(_alarms[?key])){_alarms[?key].stop();}
-		key=ds_map_find_next(_alarms, key);
+	var key=ds_map_find_first(__alarms);
+	repeat ds_map_size(__alarms){
+		if(alarm_exists(__alarms[?key])){__alarms[?key].stop();}
+		key=ds_map_find_next(__alarms, key);
 	}
 }
 //https://vk.com/clubgamemakerpro
 
 //Возобновляем все будильники
 function alarms_all_resume(){
-	var key=ds_map_find_first(_alarms);
-	repeat ds_map_size(_alarms){
-		if(alarm_exists(_alarms[?key])){_alarms[?key].resume();}
-		key=ds_map_find_next(_alarms, key);
+	var key=ds_map_find_first(__alarms);
+	repeat ds_map_size(__alarms){
+		if(alarm_exists(__alarms[?key])){__alarms[?key].resume();}
+		key=ds_map_find_next(__alarms, key);
 	}
 }
 //https://vk.com/clubgamemakerpro
 
 //Удаляем все будильники
 function alarms_all_delete(){
-	var key=ds_map_find_first(_alarms);
-	repeat ds_map_size(_alarms){
-		if(alarm_exists(_alarms[?key])){_alarms[?key].del();}
-		key=ds_map_find_next(_alarms, key);
+	var key=ds_map_find_first(__alarms);
+	repeat ds_map_size(__alarms){
+		if(alarm_exists(__alarms[?key])){__alarms[?key].del();}
+		key=ds_map_find_next(__alarms, key);
 	}
-	ds_priority_clear(_alarmsSync);
-	ds_priority_clear(_alarmsAsync);
-	ds_map_clear(_alarms);
+	ds_priority_clear(__alarmsSync);
+	ds_priority_clear(__alarmsAsync);
+	ds_map_clear(__alarms);
 }
 //https://vk.com/clubgamemakerpro
