@@ -1,3 +1,3 @@
 
-a=power(2, 32)+7
+a=power(2, 64)+7
 show_message(a)
