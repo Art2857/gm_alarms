@@ -1,2 +1,2 @@
-/// @description Insert description here
-// You can write your code in self editor
+
+f = function(){show_message(text);}
