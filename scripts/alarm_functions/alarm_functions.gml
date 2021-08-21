@@ -2,7 +2,7 @@
 //https://vk.com/clubgamemakerpro
 /*
 Параметры(Только для чтения):
-	this - Возвратный идентификатор будильника
+	self - Возвратный идентификатор будильника
 	name - имя будильника
 	status - статус будильник, запущен(true) или остановлен(false*)
 	time -Время, когда сработает будильник
@@ -39,338 +39,327 @@
 	alarm_create({loop: true, func: function(){show_message("Будильник сработал!");} }).resume().setSync(false, 5000);
 */
 
-function alarm_create(/*{setting}*/){
+/// @param [setting]
+function alarm_create(/*{setting}*/) {
 
-	_alarm=new classAlarm();//Создаём будильник
+	var _thisAlarm = new ClassAlarm(); // Создаём будильник
 	
-	_alarm.this = _alarm;//Устанавливаем 
-	_alarm.name = _alarm;//Устанавливаем имя как идентификатор самого себя
-	_alarm.object = self;
-	_alarm.data = undefined;
+	_thisAlarm.name = _thisAlarm; // Устанавливаем имя как идентификатор самого себя
+	_thisAlarm.data = undefined;
 	
-	ds_map_add(__alarms, _alarm.name, _alarm);
+	ds_map_add(__alarms, _thisAlarm.name, _thisAlarm);
 	
-	if(argument_count>0){//Если при создании были указны настройки в структуре
-		_alarm.settings(argument[0]);//то применяем их к ново-созданному будильнику
+	if (argument_count > 0) {             // Если при создании были указны настройки в структуре
+		_thisAlarm.settings(argument[0]); // то применяем их к ново-созданному будильнику
 	}
 	
-	return _alarm;//Возвращаем ново-созданный будильник
+	return _thisAlarm; // Возвращаем ново-созданный будильник
 }
-//https://vk.com/clubgamemakerpro
+// https://vk.com/clubgamemakerpro
 
-//Удаляет будильник
-function alarm_delete(thisAlarm){
-	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	ds_priority_delete_value(__alarmsSync, thisAlarm);
-	ds_priority_delete_value(__alarmsAsync, thisAlarm);
-	ds_map_delete(__alarms, thisAlarm.name);
-	delete thisAlarm;
+// Удаляет будильник
+function alarm_delete(_thisAlarm) {
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	ds_priority_delete_value(__alarmsSync, _thisAlarm);
+	ds_priority_delete_value(__alarmsAsync, _thisAlarm);
+	ds_map_delete(__alarms, _thisAlarm.name);
+	delete _thisAlarm;
 }
-//https://vk.com/clubgamemakerpro
+// https://vk.com/clubgamemakerpro
 
-//Проверяем на существование будильник по его имени
-function alarm_exists(thisAlarm){
-	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	return !is_undefined(__alarms[?thisAlarm]);
+// Проверяем на существование будильник по его имени
+function alarm_exists(_thisAlarm) {
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	return !is_undefined(__alarms[? _thisAlarm]);
 }
-//https://vk.com/clubgamemakerpro
+// https://vk.com/clubgamemakerpro
 
-//Возвращает структуру будильника по его установленному имени
-function alarm_find(name){
-	return __alarms[?name];
+// Возвращает структуру будильника по его установленному имени
+function alarm_find(name) {
+	return __alarms[? name];
 }
-//https://vk.com/clubgamemakerpro
+// https://vk.com/clubgamemakerpro
 
-//Возвращает разницу от текущего времени до срабатывания будильника
-function alarm_get_difference(thisAlarm){
-	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	with(thisAlarm){
-		if(status){
-			if(sync){
-				return time-__time;
-			}else{
-				return time-current_time;
-			}
-		}else{
-			return time-timePoint;
+// Возвращает разницу от текущего времени до срабатывания будильника
+function alarm_get_difference(_thisAlarm) {
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	with (_thisAlarm) {
+		if (self.status) {
+			if (self.sync)
+				return (self.time - __time);
+			else
+				return (self.time - current_time);
 		}
+		return (self.time - self.timePoint);
 	}
 }
-//https://vk.com/clubgamemakerpro
+// https://vk.com/clubgamemakerpro
 
-//Возвращает время до срабатывания будильника
-function alarm_get_done_time(thisAlarm){
-	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	with(thisAlarm){
-		return get_lost()==0;
-	}
+// Возвращает время до срабатывания будильника
+function alarm_get_done_time(_thisAlarm) {
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	return (_thisAlarm.get_lost() == 0);
 }
-//https://vk.com/clubgamemakerpro
+// https://vk.com/clubgamemakerpro
 
-function alarm_get_duration(thisAlarm){
-	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	with(thisAlarm){
-		return timeSet;
-	}
+function alarm_get_duration(_thisAlarm) {
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	return _thisAlarm.timeSet;
 }
 
-//Возвращает время до срабатывания будильника
-function alarm_get_lost(thisAlarm){
-	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	with(thisAlarm){
-		if(status){
-			if(sync){
-				return max(0, time-__time);
-			}else{
-				return max(0, time-current_time);
-			}
-		}else{
-			return max(0, time-timePoint);
+// Возвращает время до срабатывания будильника
+function alarm_get_lost(_thisAlarm) {
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	with (_thisAlarm) {
+		if (self.status) {
+			if (self.sync)
+				return max(0, self.time - __time);
+			else
+				return max(0, self.time - current_time);
 		}
+		return max(0, self.time- self.timePoint);
 	}
 }
-//https://vk.com/clubgamemakerpro
+// https://vk.com/clubgamemakerpro
 
-function alarm_get_progress(thisAlarm){
-	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	with(thisAlarm){
-		return (timeSet-get_lost())/timeSet;
+function alarm_get_progress(_thisAlarm) {
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	with (_thisAlarm) {
+		return ((self.timeSet - self.get_lost()) / self.timeSet);
 	}
 }
 
-//Перезапускает будильник
-function alarm_replay(thisAlarm){
-	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	return thisAlarm.resume().set(thisAlarm.timeSet);
+// Перезапускает будильник
+function alarm_replay(_thisAlarm) {
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	return _thisAlarm.resume().set(_thisAlarm.timeSet);
 }
-//https://vk.com/clubgamemakerpro
+// https://vk.com/clubgamemakerpro
 
-//Запускает будильник
-function alarm_resume(thisAlarm){
-	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	with(thisAlarm){
-		if (!status){
-			status=true; 
-			if(sync){
-				time+=__time-timePoint;
-				timePoint=__time;
-				if(time<__minSync){__minSync=time;}
-				if(is_undefined(ds_priority_find_priority(__alarmsSync, thisAlarm))){
-					ds_priority_add(__alarmsSync, thisAlarm, time);
-				}else{
-					ds_priority_change_priority(__alarmsSync, thisAlarm, time);
-				}
-			}else{
-				time+=current_time-timePoint;
-				timePoint=current_time;
-				if(time<__minAsync){__minAsync=time;}
-				if(is_undefined(ds_priority_find_priority(__alarmsAsync, thisAlarm))){
-					ds_priority_add(__alarmsAsync, thisAlarm, time);
-				}else{
-					ds_priority_change_priority(__alarmsAsync, thisAlarm, time);
-				}
+// Запускает будильник
+function alarm_resume(_thisAlarm) {
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	with (_thisAlarm) {
+		if (!self.status) {
+			self.status = true; 
+			if (self.sync) {
+				self.time     += __time - self.timePoint;
+				self.timePoint = __time;
+				if (self.time < __minSync) __minSync = time;
+				if (is_undefined(ds_priority_find_priority(__alarmsSync, _thisAlarm)))
+					ds_priority_add(__alarmsSync, _thisAlarm, self.time);
+				else
+					ds_priority_change_priority(__alarmsSync, _thisAlarm, self.time);
+			} else {
+				self.time     += current_time - self.timePoint;
+				self.timePoint = current_time;
+				if (self.time < __minAsync) __minAsync = self.time;
+				if (is_undefined(ds_priority_find_priority(__alarmsAsync, _thisAlarm)))
+					ds_priority_add(__alarmsAsync, _thisAlarm, time);
+				else
+					ds_priority_change_priority(__alarmsAsync, _thisAlarm, self.time);
 			}
 		}
 	}
-	return thisAlarm;
+	return _thisAlarm;
 }
-//https://vk.com/clubgamemakerpro
+// https://vk.com/clubgamemakerpro
 
-//Устанавливаем время, через которое сработает будильник
-function alarm_set_duration(thisAlarm, argTime){
-	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	with(thisAlarm){
-		if(sync){
-			time=__time+argTime;
-			if(time<__minSync){__minSync=time;}
-			if(!is_undefined(ds_priority_find_priority(__alarmsSync, thisAlarm))){
-				ds_priority_change_priority(__alarmsSync, thisAlarm, time);
-			}
-		}else{
-			time=current_time+argTime;
-			if(time<__minAsync){__minAsync=time;}
-			if(!is_undefined(ds_priority_find_priority(__alarmsAsync, thisAlarm))){
-				ds_priority_change_priority(__alarmsAsync, thisAlarm, time);
+// Устанавливаем время, через которое сработает будильник
+function alarm_set_duration(_thisAlarm, _argTime){
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	with (_thisAlarm) {
+		if (self.sync) {
+			self.time = __time + _argTime;
+			if (self.time < __minSync) __minSync = self.time;
+			if (!is_undefined(ds_priority_find_priority(__alarmsSync, _thisAlarm)))
+				ds_priority_change_priority(__alarmsSync, _thisAlarm, self.time);
+		} else {
+			self.time = current_time + _argTime;
+			if (self.time < __minAsync) __minAsync = self.time;
+			if (!is_undefined(ds_priority_find_priority(__alarmsAsync, _thisAlarm)))
+				ds_priority_change_priority(__alarmsAsync, _thisAlarm, self.time);
+		}
+		self.timeSet = _argTime;
+	}
+	return _thisAlarm;
+}
+// https://vk.com/clubgamemakerpro
+
+function alarm_set_data(_thisAlarm, _data) {
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	_thisAlarm.data = _data;
+	return _thisAlarm;
+}
+
+function alarm_get_data(_thisAlarm) {
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	return _thisAlarm.data;
+}
+
+function alarm_set_func(_thisAlarm, _callback) {
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	_thisAlarm.func = _callback;
+	return _thisAlarm;
+}
+
+function alarm_get_func(_thisAlarm) {
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	return _thisAlarm.func;
+}
+
+function alarm_reset_func(_thisAlarm) {
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	_thisAlarm.func = __alarm_default_func;
+	return _thisAlarm;
+}
+
+// Устанавливаем название будильника. Поиск будьника через alarm_find(name)
+function alarm_set_name(_thisAlarm, _argName) {
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	with (_thisAlarm) {
+		ds_map_delete(__alarms, self.name);
+		ds_map_add(__alarms, _argName, _thisAlarm);
+
+		if (self.status) {
+			if (self.sync) {
+				ds_priority_delete_value(__alarmsSync, _thisAlarm);
+				ds_priority_add(__alarmsSync, _thisAlarm, self.time);
+			} else {
+				ds_priority_delete_value(__alarmsAsync, _thisAlarm);
+				ds_priority_add(__alarmsAsync, _thisAlarm, self.time);
 			}
 		}
-		timeSet=argTime; 
+		self.name = _argName;
 	}
-	return thisAlarm;
+	return _thisAlarm;
 }
-//https://vk.com/clubgamemakerpro
+// https://vk.com/clubgamemakerpro
 
-function alarm_set_data(thisAlarm, data){
-	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	thisAlarm.data=data;
-	return thisAlarm;
-}
-
-function alarm_get_data(thisAlarm){
-	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	return thisAlarm.data;
-}
-
-function alarm_set_done(thisAlarm, callback){
-	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	thisAlarm.func=callback;
-	return thisAlarm;
-}
-
-function alarm_get_done(thisAlarm){
-	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	return thisAlarm.func;
-}
-
-//Устанавливаем название будильника. Поиск будьника через alarm_find(name)
-function alarm_set_name(thisAlarm, argName){
-	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	with(thisAlarm){
-		ds_map_delete(__alarms, name);
-		ds_map_add(__alarms, argName, thisAlarm);
+// Смена режим будильника и время срабатывания будильника
+function alarm_set_sync(_thisAlarm, _argSync, _argTime) {
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	with (_thisAlarm) {
+		if (_argTime != undefined) {
+			if (_argSync) {
+				self.time = __time + _argTime;
+				if (self.time < __minSync) __minSync = self.time;
+			} else {
+				self.time = current_time + _argTime;
+				if (self.time < __minAsync) __minAsync = self.time;
+			}
+			self.timeSet = _argTime;
+		}
+		self.sync = _argSync;
 		
-		if(status){
-			if(sync){
-				ds_priority_delete_value(__alarmsSync, thisAlarm);
-				ds_priority_add(__alarmsSync, thisAlarm, time);
-			}else{
-				ds_priority_delete_value(__alarmsAsync, thisAlarm);
-				ds_priority_add(__alarmsAsync, thisAlarm, time);
-			}
+		if (self.status) {
+			if (_argSync)
+				ds_priority_delete_value(__alarmsAsync, _thisAlarm);
+			else
+				ds_priority_delete_value(__alarmsSync, _thisAlarm);
 		}
-		name=argName;
 	}
-	return thisAlarm;
+	return _thisAlarm;
 }
-//https://vk.com/clubgamemakerpro
+// https://vk.com/clubgamemakerpro
 
-//Смена режим будильника и время срабатывания будильника
-function alarm_set_sync(thisAlarm, argSync, argTime){
-	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	with(thisAlarm){
-		if(argTime!=undefined){
-			if(argSync){
-				time=__time+argTime;
-				if(time<__minSync){__minSync=time;}
-			}else{
-				time=current_time+argTime;
-				if(time<__minAsync){__minAsync=time;}
-			}
-			timeSet=argTime;
-		}
-		sync=argSync;
-		
-		if(status){
-			if(argSync){
-				ds_priority_delete_value(__alarmsAsync, thisAlarm);
-			}else{
-				ds_priority_delete_value(__alarmsSync, thisAlarm);
+// Останавливает будильник
+function alarm_stop(_thisAlarm) {
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	with (_thisAlarm) {
+		if (self.status) {
+			self.status = false;
+			if (self.sync) {
+				self.timer    += __time - self.timePoint;
+				self.timePoint = __time;
+				ds_priority_delete_value(__alarmsSync, _thisAlarm);
+			} else {
+				self.timer    += current_time - self.timePoint;
+				self.timePoint = current_time;
+				ds_priority_delete_value(__alarmsAsync, _thisAlarm);
 			}
 		}
 	}
-	return thisAlarm;
+	return _thisAlarm;
 }
-//https://vk.com/clubgamemakerpro
+// https://vk.com/clubgamemakerpro
 
-//Останавливает будильник
-function alarm_stop(thisAlarm){
-	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	with(thisAlarm){
-		if (status){
-			status=false;
-			if(sync){
-				timer+=__time-timePoint;
-				timePoint=__time;
-				ds_priority_delete_value(__alarmsSync, thisAlarm);
-			}else{
-				timer+=current_time-timePoint;
-				timePoint=current_time;
-				ds_priority_delete_value(__alarmsAsync, thisAlarm);
-			}
-		}
+function alarm_set_destroy(_thisAlarm, _destroyed) {
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	_thisAlarm.destroyed = _destroyed;
+}
+
+// Обнуляем таймер будильника
+function alarm_timer_clear(_thisAlarm) {
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	with (_thisAlarm) {
+		self.timer = 0;
+		if (self.sync)
+			self.timePoint = __time;
+		else
+			self.timePoint = current_time;
 	}
-	return thisAlarm;
+	return _thisAlarm;
 }
-//https://vk.com/clubgamemakerpro
+// https://vk.com/clubgamemakerpro
 
-function alarm_set_destroy(thisAlarm, destroyed){
-	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	thisAlarm.destroyed=destroyed;
-}
-
-//Обнуляем таймер будильника
-function alarm_timer_clear(thisAlarm){
-	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	with(thisAlarm){
-		timer=0;
-		if(sync){
-			timePoint=__time;
-		}else{
-			timePoint=current_time;
+// Возвращает время таймера
+function alarm_timer_get(_thisAlarm) {
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	with (_thisAlarm) {
+		if (self.status) {
+			if (self.sync)
+				return (self.timer + (__time - self.timePoint));
+			else
+				return (self.timer + (current_time - self.timePoint));
 		}
-	}
-	return thisAlarm;
-}
-//https://vk.com/clubgamemakerpro
-
-//Возвращает время таймера
-function alarm_timer_get(thisAlarm){
-	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	with(thisAlarm){
-		if(status){
-			if(sync){
-				return timer+(__time-timePoint);
-			}else{
-				return timer+(current_time-timePoint);
-			}
-		}else{
-			return timer;
-		}
+		return self.timer;
 	}
 }
-//https://vk.com/clubgamemakerpro
+// https://vk.com/clubgamemakerpro
 
 // Обнуляем таймер(В случае второго аргумента - устанавливаем значение)
-function alarm_timer_reset(thisAlarm){
-	if(is_string(thisAlarm)){thisAlarm=alarm_find(thisAlarm); if is_undefined(thisAlarm) return undefined;}
-	with(thisAlarm){
-		var prestatus=status;
-		stop();
-		if(argument_count>1){timer=argument[1];}else{timer=0;}
-		if(prestatus){resume();}
+function alarm_timer_reset(_thisAlarm, _time=0) {
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	with (_thisAlarm) {
+		var _prestatus = self.status;
+		self.stop();
+		self.timer = _time;
+		if (_prestatus) self.resume();
 	}
-	return thisAlarm;
+	return _thisAlarm;
+}
+// https://vk.com/clubgamemakerpro
+
+// Остановить все будильники
+function alarms_all_stop() {
+	var _key = ds_map_find_first(__alarms);
+	repeat ds_map_size(__alarms) {
+		if (alarm_exists(__alarms[? _key])) __alarms[? _key].stop();
+		_key = ds_map_find_next(__alarms, _key);
+	}
 }
 //https://vk.com/clubgamemakerpro
 
-//Остановить все будильники
-function alarms_all_stop(){
-	var key=ds_map_find_first(__alarms);
-	repeat ds_map_size(__alarms){
-		if(alarm_exists(__alarms[?key])){__alarms[?key].stop();}
-		key=ds_map_find_next(__alarms, key);
+// Возобновляем все будильники
+function alarms_all_resume() {
+	var _key = ds_map_find_first(__alarms);
+	repeat ds_map_size(__alarms) {
+		if (alarm_exists(__alarms[? _key])) __alarms[? _key].resume();
+		_key = ds_map_find_next(__alarms, _key);
 	}
 }
-//https://vk.com/clubgamemakerpro
-
-//Возобновляем все будильники
-function alarms_all_resume(){
-	var key=ds_map_find_first(__alarms);
-	repeat ds_map_size(__alarms){
-		if(alarm_exists(__alarms[?key])){__alarms[?key].resume();}
-		key=ds_map_find_next(__alarms, key);
-	}
-}
-//https://vk.com/clubgamemakerpro
+// https://vk.com/clubgamemakerpro
 
 //Удаляем все будильники
-function alarms_all_delete(){
-	var key=ds_map_find_first(__alarms);
-	repeat ds_map_size(__alarms){
-		if(alarm_exists(__alarms[?key])){__alarms[?key].del();}
-		key=ds_map_find_next(__alarms, key);
+function alarms_all_delete() {
+	var _key = ds_map_find_first(__alarms);
+	repeat ds_map_size(__alarms) {
+		if (alarm_exists(__alarms[? _key])) __alarms[? _key].del(); 
+		_key = ds_map_find_next(__alarms, _key);
 	}
 	ds_priority_clear(__alarmsSync);
 	ds_priority_clear(__alarmsAsync);
 	ds_map_clear(__alarms);
 }
-//https://vk.com/clubgamemakerpro
+// https://vk.com/clubgamemakerpro

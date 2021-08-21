@@ -2,11 +2,11 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "gm_alarms",
-    "path": "gm_alarms.yyp",
+    "name": "Scripts",
+    "path": "folders/Scripts.yy",
   },
   "resourceVersion": "1.0",
-  "name": "__",
+  "name": "alarms_tests",
   "tags": [],
   "resourceType": "GMScript",
 }

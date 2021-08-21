@@ -5,7 +5,7 @@ if (variable_global_exists("__alarms")) exit;
 // https://vk.com/clubgamemakerpro
 // Асинхронные будильники отличаются от синхронных, тем что не зависят от fps
 // Колбэк - это функция, которая произойдёт при активации будильника
-// Синхронные будильники задаются в шагах игры, асинхронные в милисекундах(в секунде - 1000 милисекунд)
+// Синхронные будильники задаются в шагах игры, асинхронные в милисекундах (в секунде - 1000 милисекунд)
 
 globalvar __alarms, __alarmsSync, __alarmsAsync, __minSync, __minAsync, __time;
 __alarms      = ds_map_create();      // Все будильники
@@ -26,7 +26,7 @@ function ClassAlarm() constructor { // Выступает одновременн
 	self.timer           = 0;                           // время таймера, до последнего запуска
 										                
 	self.destroyed       = false;                       // Удалить после активации(true) или нет(false)
-	self.func            = function() {};               // функция, которая сработает при истечении времени
+	self.func            = __alarm_default_func         // функция, которая сработает при истечении времени
 	self.loop            = false;	                    // true - повторять, false - исполнить один раз
 	self.sync            = true;                        /* true - выполняется в шагах игры(время указывается в шагах), 
                                                          * false - в реальном времени(время указывается в секундах)
@@ -53,8 +53,8 @@ function ClassAlarm() constructor { // Выступает одновременн
 	
 	static set_data      = function(_data)              { return alarm_set_data(self, _data);              } //
 	static get_data      = function()                   { return alarm_get_data();                         } //
-	static set_done      = function(_callback)          { return alarm_set_done(self, _callback);          } // 
-	static get_done      = function()                   { return alarm_get_done();                         } //
+	static set_func      = function(_callback)          { return alarm_set_func(self, _callback);          } // 
+	static get_func      = function()                   { return alarm_get_func();                         } //
 	
 	static resume        = function()                   { return alarm_resume(self);                       } // Продолжить выполнение будильника
 	static stop          = function()                   { return alarm_stop(self);                         } // Остановить будильник
@@ -118,3 +118,5 @@ function alarm_settings(_alarm, _settings) {
 	
 	return _alarm;
 }
+
+function __alarm_default_func() { return undefined; };

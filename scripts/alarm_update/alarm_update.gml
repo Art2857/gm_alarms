@@ -13,35 +13,17 @@ function alarm_update(timeJump=1){
 					if(loop){
 						if(repeating && timeSet>0){
 							var rep=ceil((__time-time)/timeSet);
-							if(is_method(func)){
-								repeat rep{
-									if(is_struct(object) or instance_exists(object)){
-										with object {other.func(other.data, other.this);}
-									}else{
-										func(data, this);
-									}
-								}
+							repeat rep{
+								func(data, self);
 							}
 							time+=rep*timeSet;
 						}else{
-							if(is_method(func)){
-							if(is_struct(object) or instance_exists(object)){
-									with object {other.func(other.data, other.this);}
-								}else{
-									func(data, this);
-								}
-							}
+							func(data, self);
 							time=__time+timeSet;
 						}
-						ds_priority_change_priority(__alarmsSync, this, time);
+						ds_priority_change_priority(__alarmsSync, self, time);
 					}else{
-						if(is_method(func)){
-							if(is_struct(object) or instance_exists(object)){
-								with object {other.func(other.data, other.this);}
-							}else{
-								func(data, this);
-							}
-						}
+						func(data, self);
 						if(destroyed){
 							del();
 						}else{
@@ -67,35 +49,18 @@ function alarm_update(timeJump=1){
 					if(loop){
 						if(repeating && timeSet>0){
 							var rep=ceil((current_time-time)/timeSet);
-							if(is_method(func)){
-								repeat rep{
-									if(is_struct(object) or instance_exists(object)){
-										with object {other.func(other.data, other.this);}
-									}else{
-										func(data, this);
-									}
-								}
+							repeat rep{
+								func(data, self);
 							}
 							time+=rep*timeSet;
 						}else{
-							if(is_method(func)){
-								if(is_struct(object) or instance_exists(object)){
-									with object {other.func(other.data, other.this);}
-								}else{
-									func(data, this);
-								}
-							}
+							func(data, self);
 							time=current_time+timeSet;
 						}
-						ds_priority_change_priority(__alarmsAsync, this, time);
+						ds_priority_change_priority(__alarmsAsync, self, time);
 					}else{
-						if(is_method(func)){
-							if(is_struct(object) or instance_exists(object)){
-								with object {other.func(other.data, other.this);}
-							}else{
-								func(data, this);
-							}
-						}
+						
+						func(data, self);
 						if(destroyed){
 							del();
 						}else{

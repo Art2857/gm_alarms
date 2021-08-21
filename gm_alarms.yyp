@@ -5,7 +5,7 @@
     {"id":{"name":"alarm_update","path":"scripts/alarm_update/alarm_update.yy",},"order":2,},
     {"id":{"name":"init_alarms","path":"scripts/init_alarms/init_alarms.yy",},"order":3,},
     {"id":{"name":"alarm_samples","path":"scripts/alarm_samples/alarm_samples.yy",},"order":1,},
-    {"id":{"name":"__","path":"scripts/__/__.yy",},"order":14,},
+    {"id":{"name":"alarms_tests","path":"scripts/alarms_tests/alarms_tests.yy",},"order":1,},
     {"id":{"name":"room_alarms","path":"rooms/room_alarms/room_alarms.yy",},"order":0,},
   ],
   "Options": [
@@ -43,7 +43,7 @@
     {"folderPath":"folders/Animation Curves.yy","order":11,"resourceVersion":"1.0","name":"Animation Curves","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Notes.yy","order":12,"resourceVersion":"1.0","name":"Notes","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Extensions.yy","order":13,"resourceVersion":"1.0","name":"Extensions","tags":[],"resourceType":"GMFolder",},
-    {"folderPath":"folders/Scripts/alarms.yy","order":4,"resourceVersion":"1.0","name":"alarms","tags":[],"resourceType":"GMFolder",},
+    {"folderPath":"folders/Scripts/alarms.yy","order":0,"resourceVersion":"1.0","name":"alarms","tags":[],"resourceType":"GMFolder",},
   ],
   "AudioGroups": [
     {"targets":-1,"resourceVersion":"1.3","name":"audiogroup_default","resourceType":"GMAudioGroup",},
