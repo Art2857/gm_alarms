@@ -12,7 +12,7 @@
 	sync - будильник делает отчёт в шагах игры(true*) или в реальном времени(false)
 	
 Параметры(Для чтения и установки):
-	func - функция активации будильника function(){}*
+	func - функция активации будильника function(){}* (функции вызываются в пространстве будильника)
 	destroyed - при активации будильника, будильник будет удалён(true) или останется (false*)
 	loop - зацикливание будильника (true/false*)
 	repeating - Если за время между вызовами alarm_update, 
@@ -346,7 +346,7 @@ function alarms_all_resume() {
 }
 // https://vk.com/clubgamemakerpro
 
-//Удаляем все будильники
+// Удаляем все будильники
 function alarms_all_delete() {
 	var _key = ds_map_find_first(__alarms);
 	var _alarm;

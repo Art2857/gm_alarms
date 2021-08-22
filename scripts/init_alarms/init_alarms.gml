@@ -67,7 +67,7 @@ function ClassAlarm() constructor { // Выступает одновременн
 	static del           = function()                   { return alarm_delete(self);                       } // Удалить будильник
 	
 	static settings      = 
-		function() {
+		function() { // гарантируем наличие глобальных переменных
 		
 			init_alarms();
 			return method(
@@ -123,4 +123,4 @@ function alarm_settings(_alarm, _settings) {
 	return _alarm;
 }
 
-function __alarm_default_func() { return undefined; };
+function __alarm_default_func() {};
