@@ -1,7 +1,7 @@
 //https://vk.com/clubgamemakerpro
 //Обработка будильников
-//timeJump - скорость синхронных будильников, рекомендуемая скорость 1
-function alarm_update(timeJump=1) {
+//_timeJump - скорость синхронных будильников, рекомендуемая скорость 1
+function alarm_update(_timeJump=1) {
 	//Обработка синхронных будильников
 	if (__time >= __minSync) {
 		repeat ds_priority_size(__alarmsSync) {
@@ -71,5 +71,5 @@ function alarm_update(timeJump=1) {
 			}
 		}
 	}
-	__time += timeJump;
+	__time += _timeJump;
 }
