@@ -146,18 +146,18 @@ function alarm_resume(_thisAlarm) {
 				self.time     += __time - self.timePoint;
 				self.timePoint = __time;
 				if (self.time < __minSync) __minSync = time;
-				if (is_undefined(ds_priority_find_priority(__alarmsSync, _thisAlarm)))
-					ds_priority_add(__alarmsSync, _thisAlarm, self.time);
+				if (is_undefined(ds_priority_find_priority(__alarmsSync, self)))
+					ds_priority_add(__alarmsSync, self, self.time);
 				else
-					ds_priority_change_priority(__alarmsSync, _thisAlarm, self.time);
+					ds_priority_change_priority(__alarmsSync, self, self.time);
 			} else {
 				self.time     += current_time - self.timePoint;
 				self.timePoint = current_time;
 				if (self.time < __minAsync) __minAsync = self.time;
-				if (is_undefined(ds_priority_find_priority(__alarmsAsync, _thisAlarm)))
-					ds_priority_add(__alarmsAsync, _thisAlarm, time);
+				if (is_undefined(ds_priority_find_priority(__alarmsAsync, self)))
+					ds_priority_add(__alarmsAsync, self, time);
 				else
-					ds_priority_change_priority(__alarmsAsync, _thisAlarm, self.time);
+					ds_priority_change_priority(__alarmsAsync, self, self.time);
 			}
 		}
 	}
@@ -172,13 +172,13 @@ function alarm_set_duration(_thisAlarm, _argTime){
 		if (self.sync) {
 			self.time = __time + _argTime;
 			if (self.time < __minSync) __minSync = self.time;
-			if (!is_undefined(ds_priority_find_priority(__alarmsSync, _thisAlarm)))
-				ds_priority_change_priority(__alarmsSync, _thisAlarm, self.time);
+			if (!is_undefined(ds_priority_find_priority(__alarmsSync, self)))
+				ds_priority_change_priority(__alarmsSync, self, self.time);
 		} else {
 			self.time = current_time + _argTime;
 			if (self.time < __minAsync) __minAsync = self.time;
-			if (!is_undefined(ds_priority_find_priority(__alarmsAsync, _thisAlarm)))
-				ds_priority_change_priority(__alarmsAsync, _thisAlarm, self.time);
+			if (!is_undefined(ds_priority_find_priority(__alarmsAsync, self)))
+				ds_priority_change_priority(__alarmsAsync, self, self.time);
 		}
 		self.timeSet = _argTime;
 	}
@@ -198,6 +198,7 @@ function alarm_get_data(_thisAlarm) {
 }
 
 function alarm_set_func(_thisAlarm, _callback) {
+	if (!is_method(_callback))   _callback  = __alarm_default_func;
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	_thisAlarm.func = _callback;
 	return _thisAlarm;
@@ -208,26 +209,20 @@ function alarm_get_func(_thisAlarm) {
 	return _thisAlarm.func;
 }
 
-function alarm_reset_func(_thisAlarm) {
-	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
-	_thisAlarm.func = __alarm_default_func;
-	return _thisAlarm;
-}
-
 // Устанавливаем название будильника. Поиск будьника через alarm_find(name)
 function alarm_set_name(_thisAlarm, _argName) {
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	with (_thisAlarm) {
 		ds_map_delete(__alarms, self.name);
-		ds_map_add(__alarms, _argName, _thisAlarm);
+		ds_map_add(__alarms, _argName, self);
 
 		if (self.status) {
 			if (self.sync) {
-				ds_priority_delete_value(__alarmsSync, _thisAlarm);
-				ds_priority_add(__alarmsSync, _thisAlarm, self.time);
+				ds_priority_delete_value(__alarmsSync, self);
+				ds_priority_add(__alarmsSync, self, self.time);
 			} else {
-				ds_priority_delete_value(__alarmsAsync, _thisAlarm);
-				ds_priority_add(__alarmsAsync, _thisAlarm, self.time);
+				ds_priority_delete_value(__alarmsAsync, self);
+				ds_priority_add(__alarmsAsync, self, self.time);
 			}
 		}
 		self.name = _argName;
@@ -254,9 +249,9 @@ function alarm_set_sync(_thisAlarm, _argSync, _argTime) {
 		
 		if (self.status) {
 			if (_argSync)
-				ds_priority_delete_value(__alarmsAsync, _thisAlarm);
+				ds_priority_delete_value(__alarmsAsync, self);
 			else
-				ds_priority_delete_value(__alarmsSync, _thisAlarm);
+				ds_priority_delete_value(__alarmsSync, self);
 		}
 	}
 	return _thisAlarm;
@@ -272,11 +267,11 @@ function alarm_stop(_thisAlarm) {
 			if (self.sync) {
 				self.timer    += __time - self.timePoint;
 				self.timePoint = __time;
-				ds_priority_delete_value(__alarmsSync, _thisAlarm);
+				ds_priority_delete_value(__alarmsSync, self);
 			} else {
 				self.timer    += current_time - self.timePoint;
 				self.timePoint = current_time;
-				ds_priority_delete_value(__alarmsAsync, _thisAlarm);
+				ds_priority_delete_value(__alarmsAsync, self);
 			}
 		}
 	}
@@ -335,17 +330,17 @@ function alarm_timer_reset(_thisAlarm, _time=0) {
 function alarms_all_stop() {
 	var _key = ds_map_find_first(__alarms);
 	repeat ds_map_size(__alarms) {
-		if (alarm_exists(__alarms[? _key])) __alarms[? _key].stop();
+		__alarms[? _key].stop();
 		_key = ds_map_find_next(__alarms, _key);
 	}
 }
-//https://vk.com/clubgamemakerpro
+// https://vk.com/clubgamemakerpro
 
 // Возобновляем все будильники
 function alarms_all_resume() {
 	var _key = ds_map_find_first(__alarms);
 	repeat ds_map_size(__alarms) {
-		if (alarm_exists(__alarms[? _key])) __alarms[? _key].resume();
+		__alarms[? _key].resume();
 		_key = ds_map_find_next(__alarms, _key);
 	}
 }
@@ -354,12 +349,11 @@ function alarms_all_resume() {
 //Удаляем все будильники
 function alarms_all_delete() {
 	var _key = ds_map_find_first(__alarms);
+	var _alarm;
 	repeat ds_map_size(__alarms) {
-		if (alarm_exists(__alarms[? _key])) __alarms[? _key].del(); 
+		_alarm = __alarms[? _key];
 		_key = ds_map_find_next(__alarms, _key);
+		_alarm.del();
 	}
-	ds_priority_clear(__alarmsSync);
-	ds_priority_clear(__alarmsAsync);
-	ds_map_clear(__alarms);
 }
 // https://vk.com/clubgamemakerpro

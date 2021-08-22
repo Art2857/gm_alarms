@@ -111,6 +111,10 @@ function alarm_settings(_alarm, _settings) {
 			alarm_set_name(_alarm, _value);
 			break;
 		
+		case "func":
+			alarm_set_func(_alarm, _value);
+			break;
+		
 		default: variable_struct_set(_alarm, _key, _value);
 		}
 	}

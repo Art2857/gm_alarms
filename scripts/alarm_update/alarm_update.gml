@@ -1,78 +1,75 @@
 //https://vk.com/clubgamemakerpro
 //Обработка будильников
 //timeJump - скорость синхронных будильников, рекомендуемая скорость 1
-function alarm_update(timeJump=1){
+function alarm_update(timeJump=1) {
 	//Обработка синхронных будильников
-	if(__time>=__minSync){
-		repeat ds_priority_size(__alarmsSync){
-			var _alarm=ds_priority_find_min(__alarmsSync);
-			var vtime=_alarm.time;
+	if (__time >= __minSync) {
+		repeat ds_priority_size(__alarmsSync) {
+			var _alarm = ds_priority_find_min(__alarmsSync);
+			var _vtime = _alarm.time;
 			 
-			if(__time>=vtime){
-				with(_alarm){
-					if(loop){
-						if(repeating && timeSet>0){
-							var rep=ceil((__time-time)/timeSet);
-							repeat rep{
-								func(data, self);
+			if (__time >= _vtime) {
+				with (_alarm) {
+					if (self.loop) {
+						if (self.repeating && self.timeSet > 0) {
+							var _rep = ceil((__time - self.time) / self.timeSet);
+							repeat _rep {
+								self.func(self.data, self);
 							}
-							time+=rep*timeSet;
-						}else{
-							func(data, self);
-							time=__time+timeSet;
+							self.time += _rep * self.timeSet;
+						} else {
+							self.func(self.data, self);
+							self.time = __time + self.timeSet;
 						}
-						ds_priority_change_priority(__alarmsSync, self, time);
-					}else{
-						func(data, self);
-						if(destroyed){
-							del();
-						}else{
-							stop();
-						}
+						ds_priority_change_priority(__alarmsSync, self, self.time);
+					} else {
+						self.func(self.data, self);
+						if (self.destroyed)
+							self.del();
+						else
+							self.stop();
 					}
 				}
-			}else{
-				__minSync=vtime;
+			} else {
+				__minSync = _vtime;
 				break;
 			}
 		}
 	}
 	
 	//Обработка асинхронных будильников
-	if(current_time>=__minAsync){
-		repeat ds_priority_size(__alarmsAsync){
-			var _alarm=ds_priority_find_min(__alarmsAsync);
-			var vtime=_alarm.time;
+	if (current_time >= __minAsync) {
+		repeat ds_priority_size(__alarmsAsync) {
+			var _alarm = ds_priority_find_min(__alarmsAsync);
+			var _vtime = _alarm.time;
 			
-			if(current_time>vtime){
-				with(_alarm){
-					if(loop){
-						if(repeating && timeSet>0){
-							var rep=ceil((current_time-time)/timeSet);
-							repeat rep{
-								func(data, self);
+			if (current_time > _vtime) {
+				with (_alarm) {
+					if (self.loop) {
+						if (self.repeating && self.timeSet > 0) {
+							var _rep = ceil((current_time - self.time) / self.timeSet);
+							repeat _rep {
+								self.func(self.data, self);
 							}
-							time+=rep*timeSet;
-						}else{
-							func(data, self);
-							time=current_time+timeSet;
+							self.time += _rep * self.timeSet;
+						} else {
+							self.func(self.data, self);
+							self.time = current_time + self.timeSet;
 						}
-						ds_priority_change_priority(__alarmsAsync, self, time);
-					}else{
-						
-						func(data, self);
-						if(destroyed){
-							del();
-						}else{
-							stop();
-						}
+						ds_priority_change_priority(__alarmsAsync, self, self.time);
+					} else {
+						self.func(self.data, self);
+						if (self.destroyed)
+							self.del();
+						else
+							self.stop();
 					}
 				}
-			}else{
-				__minAsync=vtime;
+			} else {
+				__minAsync = _vtime;
 				break;
 			}
 		}
 	}
-	__time+=timeJump;
+	__time += timeJump;
 }
