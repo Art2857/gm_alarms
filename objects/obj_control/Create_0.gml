@@ -1,2 +1,2 @@
 
-f = function(){show_message(text);}
+//f = function(){show_message(text);}

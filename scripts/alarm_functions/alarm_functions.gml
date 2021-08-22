@@ -166,7 +166,7 @@ function alarm_resume(_thisAlarm) {
 // https://vk.com/clubgamemakerpro
 
 // Устанавливаем время, через которое сработает будильник
-function alarm_set_duration(_thisAlarm, _argTime){
+function alarm_set_duration(_thisAlarm, _argTime) {
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	with (_thisAlarm) {
 		if (self.sync) {
