@@ -20,7 +20,7 @@ function ClassAlarm() constructor { // Выступает одновременн
 	
 	self.status          = false;                       // true - работает, false - остановлен
 	self.time            = 0;                           // Время, когда сработает будильник
-	self.timeSet         = 0;                           // Через какое время будильник сработает(Каждые ...)
+	self.timeSet         = 1;                           // Через какое время будильник сработает(Каждые ...)
 				         				                
 	self.timePoint       = 0;                           // Время, когда будильник был остановлен или запущен
 	self.timer           = 0;                           // время таймера, до последнего запуска
@@ -100,7 +100,7 @@ function alarm_settings(_alarm, _settings) {
 			break;
 		
 		case "timeSet":
-			_alarm.timeSet = max(0, _value);
+			_alarm.timeSet = max(1, _value);
 			break;
 
 		case "sync":

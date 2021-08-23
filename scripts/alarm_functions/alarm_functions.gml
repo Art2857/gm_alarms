@@ -166,8 +166,9 @@ function alarm_resume(_thisAlarm) {
 // https://vk.com/clubgamemakerpro
 
 // Устанавливаем время, через которое сработает будильник
-function alarm_set_duration(_thisAlarm, _argTime) {
+function alarm_set_duration(_thisAlarm, _argTime=1) {
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	_argTime = max(_argTime, 1);
 	with (_thisAlarm) {
 		if (self.sync) {
 			self.time = __time + _argTime;
@@ -232,8 +233,9 @@ function alarm_set_name(_thisAlarm, _argName) {
 // https://vk.com/clubgamemakerpro
 
 // Смена режим будильника и время срабатывания будильника
-function alarm_set_sync(_thisAlarm, _argSync, _argTime) {
+function alarm_set_sync(_thisAlarm, _argSync, _argTime=1) {
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	_argTime = max(_argTime, 1);
 	with (_thisAlarm) {
 		if (_argTime != undefined) {
 			if (_argSync) {
