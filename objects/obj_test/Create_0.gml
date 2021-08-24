@@ -1,9 +1,9 @@
 
 count=0;
 
-alarm_limit_sync(1, 100, function() {
+alarm_limit_sync(1, 101, function() {
 	
-	alarm_limit_sync(1, 101, function() {
+	alarm_limit_sync(1, 100, function() {
 		count++;
 	});
 });
