@@ -4,14 +4,14 @@
 function alarm_update(_timeJump=1) {
 	//Обработка синхронных будильников
 	if (__time >= __minSync) {
-		while(ds_priority_size(__alarmsSync)){
+		while (ds_priority_size(__alarmsSync)) {
 			var _alarm = ds_priority_find_min(__alarmsSync);
 			var _vtime = _alarm.time;
 			 
 			if (__time >= _vtime) {
 				with (_alarm) {
 					if (self.loop) {
-						if(self.timeSet > 0){
+						if (self.timeSet > 0) {
 							if (self.repeating) {
 								var _rep = ceil((__time - self.time) / self.timeSet);
 								repeat _rep {
@@ -41,14 +41,14 @@ function alarm_update(_timeJump=1) {
 	
 	//Обработка асинхронных будильников
 	if (current_time >= __minAsync) {
-		while(ds_priority_size(__alarmsAsync)){//for(var i=0; i<ds_priority_size(__alarmsAsync); i++){//repeat ds_priority_size(__alarmsAsync) {
+		while (ds_priority_size(__alarmsAsync)) {
 			var _alarm = ds_priority_find_min(__alarmsAsync);
 			var _vtime = _alarm.time;
 			
 			if (current_time >= _vtime) {
 				with (_alarm) {
 					if (self.loop) {
-						if(self.timeSet > 0){
+						if (self.timeSet > 0) {
 							if (self.repeating) {
 								var _rep = ceil((current_time - self.time) / self.timeSet);
 								repeat _rep {

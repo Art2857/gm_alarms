@@ -50,13 +50,13 @@ function alarm_limit_sync(_time, _limit, _callback, _data, _callback_end, _data_
 	}
 	
 	var _alarm_loop = alarm_loop_sync(_time,
-	function(data, this){
-		if(this.time < this[$ "alarm_stoped"].time){
-			data.callback(data.data, this[$ "alarm_stoped"], this);
+	function(_data, _this) {
+		if (_this.time < _this[$ "alarm_limit"].time) {
+			_data.callback(_data.data, _this[$ "alarm_limit"], _this);
 		}
 	}, {callback: _callback, data: _data});
 	
-	_alarm_loop[$ "alarm_stoped"] = alarm_sync(_limit + 1, 
+	_alarm_loop[$ "alarm_limit"] = alarm_sync(_limit + 1, 
 		function(_data) {
 			if (alarm_exists(_data.alarm_loop)) {
 				if (is_method(_data.callback_end)) _data.callback_end(_data.data_end);
@@ -64,7 +64,7 @@ function alarm_limit_sync(_time, _limit, _callback, _data, _callback_end, _data_
 			alarm_delete(_data.alarm_loop);
 		}, {alarm_loop: _alarm_loop, callback_end: _callback_end, data_end: _data_end});
 		
-	return _alarm_loop[$ "alarm_stoped"];
+	return _alarm_loop[$ "alarm_limit"];
 }
 // https://vk.com/clubgamemakerpro
 
@@ -76,13 +76,13 @@ function alarm_limit_async(_time, _limit, _callback, _data, _callback_end, _data
 	}
 	
 	var _alarm_loop = alarm_loop_async(_time,
-	function(data, this){
-		if(this.time < this[$ "alarm_stoped"].time){
-			data.callback(data.data, this[$ "alarm_stoped"], this);
+	function(_data, _this) {
+		if (_this.time < _this[$ "alarm_limit"].time) {
+			_data.callback(_data.data, _this[$ "alarm_limit"], _this);
 		}
 	}, {callback: _callback, data: _data});
 	
-	_alarm_loop[$ "alarm_stoped"] = alarm_async(_limit + 1, 
+	_alarm_loop[$ "alarm_limit"] = alarm_async(_limit + 1, 
 		function(_data) {
 			if (alarm_exists(_data.alarm_loop)) {
 				if (is_method(_data.callback_end)) _data.callback_end(_data.data_end);
@@ -90,7 +90,7 @@ function alarm_limit_async(_time, _limit, _callback, _data, _callback_end, _data
 			alarm_delete(_data.alarm_loop);
 		}, {alarm_loop: _alarm_loop, callback_end: _callback_end, data_end: _data_end});
 		
-	return _alarm_loop[$ "alarm_stoped"];
+	return _alarm_loop[$ "alarm_limit"];
 }
 // https://vk.com/clubgamemakerpro
 
