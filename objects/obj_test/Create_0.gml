@@ -4,17 +4,21 @@ count2=0;
 
 alarm_sync(1, function(){}).set_destroy(false);
 alarm_sync(2, function(){}).set_destroy(false);
-//alarm_sync(3, function(){}).set_destroy(false);
-//alarm_sync(4, function(){}).set_destroy(false);
-//alarm_sync(5, function(){}).set_destroy(false);
+alarm_sync(3, function(){}).set_destroy(false);
+alarm_sync(4, function(){}).set_destroy(false);
+alarm_sync(5, function(){}).set_destroy(false);
 
-alarm_limit_sync(1, 5, function(data, this) {
+alarm_loop_sync(1, function() {
+	show_debug_message(count1++);
+});
+
+/*alarm_limit_sync(1, 5, function(data, this) {
 	count1++;
 	alarm_limit_sync(1, 5, function(data, this) {
 		count2++;
 		show_debug_message([count1, count2]);
 	});
-});
+});*/
 
 
 
