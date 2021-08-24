@@ -32,7 +32,7 @@ function alarm_update(_timeJump=1) {
 					}
 				}
 			} else {
-				__minSync = _vtime;
+				//__minSync = _vtime;
 				//break;
 			}
 			}
