@@ -48,7 +48,16 @@ function alarm_limit_sync(_time, _limit, _callback, _data, _callback_end, _data_
 		if (is_method(_callback)) _callback = method(self, _callback);
 		if (is_method(_callback_end)) _callback_end = method(self, _callback_end);
 	}
+	
+	
 	var _alarm_loop = alarm_loop_sync(_time, _callback, _data);
+	/*function(_data, _this){
+		if(alarm_exists()){
+			_callback(_data, _this);
+		}
+	}, _data);*/
+	//_alarm_loop.limit_get_progress = method(_alarm_loop, function(){return self.data.time / self.data.limit;});
+	
 	_alarm_loop[$ "alarm_stoped"] = alarm_sync(_limit, 
 		function(_data) {
 			if (alarm_exists(_data.alarm_loop)) {
@@ -56,7 +65,8 @@ function alarm_limit_sync(_time, _limit, _callback, _data, _callback_end, _data_
 			}
 			alarm_delete(_data.alarm_loop);
 		}, {alarm_loop: _alarm_loop, callback_end: _callback_end, data_end: _data_end});
-	return _alarm_loop;
+		
+	return _alarm_loop[$ "alarm_stoped"];
 }
 // https://vk.com/clubgamemakerpro
 
