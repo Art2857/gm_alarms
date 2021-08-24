@@ -4,7 +4,7 @@
 function alarm_update(_timeJump=1) {
 	//Обработка синхронных будильников
 	if (__time >= __minSync) {
-		while(ds_priority_size(__alarmsSync)){//for(var i=0; i<ds_priority_size(__alarmsSync); i++){//repeat ds_priority_size(__alarmsSync) {
+		repeat 10{//while(ds_priority_size(__alarmsSync)){//for(var i=0; i<ds_priority_size(__alarmsSync); i++){//repeat ds_priority_size(__alarmsSync) {
 			var _alarm = ds_priority_find_min(__alarmsSync);
 			var _vtime = _alarm.time;
 			 
