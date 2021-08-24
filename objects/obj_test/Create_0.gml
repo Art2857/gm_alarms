@@ -2,12 +2,16 @@
 count1=0;
 count2=0;
 
-alarm_limit_sync(1, 10, function(data, this) {
-	count1++;
+alarm_sync(10, function(){
+
 	alarm_limit_sync(1, 10, function(data, this) {
-		count2++;
-		show_debug_message([count1, count2]);
+		count1++;
+		alarm_limit_sync(1, 10, function(data, this) {
+			count2++;
+			show_debug_message([count1, count2]);
+		});
 	});
+
 });
 
 //	//alarm_sync(30, obj_control.f);
