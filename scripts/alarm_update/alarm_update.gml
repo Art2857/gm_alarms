@@ -26,7 +26,7 @@ function alarm_update(_timeJump=1) {
 					} else {
 						self.func(self.data, self);
 						if (self.destroyed)
-							self.del();
+							//self.del();
 						else
 							self.stop();
 					}
