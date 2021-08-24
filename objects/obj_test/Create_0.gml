@@ -4,7 +4,7 @@ count2=0;
 
 alarm_sync(1, function(){}).set_destroy(false);
 alarm_sync(2, function(){}).set_destroy(false);
-alarm_sync(3, function(){}).set_destroy(false);
+//alarm_sync(3, function(){}).set_destroy(false);
 //alarm_sync(4, function(){}).set_destroy(false);
 //alarm_sync(5, function(){}).set_destroy(false);
 
