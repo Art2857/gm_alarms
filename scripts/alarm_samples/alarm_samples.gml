@@ -58,7 +58,7 @@ function alarm_limit_sync(_time, _limit, _callback, _data, _callback_end, _data_
 	}, {callback: _callback, data: _data});
 	//_alarm_loop.limit_get_progress = method(_alarm_loop, function(){return self.data.time / self.data.limit;});
 	
-	_alarm_loop[$ "alarm_stoped"] = alarm_sync(_limit, 
+	_alarm_loop[$ "alarm_stoped"] = alarm_sync(_limit + 1, 
 		function(_data) {
 			if (alarm_exists(_data.alarm_loop)) {
 				if (is_method(_data.callback_end)) _data.callback_end(_data.data_end);
