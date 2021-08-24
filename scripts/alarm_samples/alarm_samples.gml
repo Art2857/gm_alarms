@@ -50,12 +50,12 @@ function alarm_limit_sync(_time, _limit, _callback, _data, _callback_end, _data_
 	}
 	
 	
-	var _alarm_loop = alarm_loop_sync(_time, _callback, _data);
-	/*function(_data, _this){
-		if(alarm_exists()){
+	var _alarm_loop = alarm_loop_sync(_time, //_callback, _data);
+	function(_data, _this){
+		if(this[$ "alarm_stoped"].time < this.time){
 			_callback(_data, _this);
 		}
-	}, _data);*/
+	}, _data);
 	//_alarm_loop.limit_get_progress = method(_alarm_loop, function(){return self.data.time / self.data.limit;});
 	
 	_alarm_loop[$ "alarm_stoped"] = alarm_sync(_limit, 
