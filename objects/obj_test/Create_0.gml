@@ -11,11 +11,11 @@ alarm_sync(5, function(){})//.set_destroy(false);
 
 
 alarm_limit_sync(1, 5, function(data, this) {
-	show_debug_message(this.time);
-	/*alarm_limit_sync(1, 5, function(data, this) {
+	count1++;
+	alarm_limit_sync(1, 5, function(data, this) {
 		count2++;
 		show_debug_message([count1, count2]);
-	});*/
+	});
 }, "LIMIT_DATA", function(){}, "LIMIT_DATA_END");
 
 /*alarm_loop_sync(1, function() {
