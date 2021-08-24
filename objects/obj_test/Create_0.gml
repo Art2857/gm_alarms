@@ -16,7 +16,7 @@ alarm_limit_sync(1, 5, function(data, this) {
 		count2++;
 		show_debug_message([count1, count2]);
 	});*/
-}, "LIMIT!", function(){}, "LIMIT!");
+}, "LIMIT_DATA", function(){}, "LIMIT_DATA_END");
 
 /*alarm_loop_sync(1, function() {
 	show_debug_message(count1++);
