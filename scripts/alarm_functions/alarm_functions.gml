@@ -145,7 +145,7 @@ function alarm_resume(_thisAlarm) {
 			if (self.sync) {
 				self.time     += __time - self.timePoint;
 				self.timePoint = __time;
-				if (self.time < __minSync) __minSync = time;
+				if (self.time < __minSync) __minSync = self.time;
 				if (is_undefined(ds_priority_find_priority(__alarmsSync, self)))
 					ds_priority_add(__alarmsSync, self, self.time);
 				else
