@@ -23,11 +23,11 @@ function alarm_update(_timeJump=1) {
 						}
 						ds_priority_change_priority(__alarmsSync, self, self.time);
 					} else {
-						self.func(self.data, self);
+						/*self.func(self.data, self);
 						if (self.destroyed)
 							self.del();
 						else
-							self.stop();
+							self.stop();*/
 					}
 				}
 			} else {
@@ -43,7 +43,7 @@ function alarm_update(_timeJump=1) {
 			var _alarm = ds_priority_find_min(__alarmsAsync);
 			var _vtime = _alarm.time;
 			
-			if (current_time > _vtime) {
+			if (current_time >= _vtime) {
 				with (_alarm) {
 					if (self.loop) {
 						if (self.repeating && self.timeSet > 0) {
