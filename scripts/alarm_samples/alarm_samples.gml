@@ -52,7 +52,7 @@ function alarm_limit_sync(_time, _limit, _callback, _data, _callback_end, _data_
 	
 	var _alarm_loop = alarm_loop_sync(_time, //_callback, _data);
 	function(data, this){
-		if(this[$ "alarm_stoped"].time < this.time){
+		if(this.time < this[$ "alarm_stoped"].time){
 			data.callback(data.data, this);
 		}
 	}, {callback: _callback, data: _data});
