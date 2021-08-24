@@ -12,17 +12,19 @@ function alarm_update(_timeJump=1) {
 			if (__time >= _vtime) {
 				with (_alarm) {
 					if (self.loop) {
-						if (self.repeating && self.timeSet > 0) {
-							var _rep = ceil((__time - self.time) / self.timeSet);
-							repeat _rep {
+						if(self.timeSet > 0){
+							if (self.repeating) {
+								var _rep = ceil((__time - self.time) / self.timeSet);
+								repeat _rep {
+									self.func(self.data, self);
+								}
+								self.time += _rep * self.timeSet;
+							} else {
 								self.func(self.data, self);
+								self.time = __time + self.timeSet;
 							}
-							self.time += _rep * self.timeSet;
-						} else {
-							self.func(self.data, self);
-							self.time = __time + self.timeSet;
+							ds_priority_change_priority(__alarmsSync, self, self.time);
 						}
-						ds_priority_change_priority(__alarmsSync, self, self.time);
 					} else {
 						self.func(self.data, self);
 						if (self.destroyed)
