@@ -52,7 +52,7 @@ function alarm_limit_sync(_time, _limit, _callback, _data, _callback_end, _data_
 	var _alarm_loop = alarm_loop_sync(_time,
 	function(data, this){
 		if(this.time < this[$ "alarm_stoped"].time){
-			data.callback(data.data, this);
+			data.callback(data.data, this[$ "alarm_stoped"], this);
 		}
 	}, {callback: _callback, data: _data});
 	
@@ -78,7 +78,7 @@ function alarm_limit_async(_time, _limit, _callback, _data, _callback_end, _data
 	var _alarm_loop = alarm_loop_async(_time,
 	function(data, this){
 		if(this.time < this[$ "alarm_stoped"].time){
-			data.callback(data.data, this);
+			data.callback(data.data, this[$ "alarm_stoped"], this);
 		}
 	}, {callback: _callback, data: _data});
 	
