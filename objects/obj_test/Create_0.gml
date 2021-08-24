@@ -1,10 +1,11 @@
 
-count=0;
+count1=0;
+count2=0;
 
-alarm_limit_sync(1, 100, function() {
-	
-	alarm_limit_sync(1, 100, function() {
-		count++;
+alarm_limit_sync(1, 100, function(data, this) {
+	count1++;
+	alarm_limit_sync(1, 100, function(data, this) {
+		count2++;
 	});
 });
 
