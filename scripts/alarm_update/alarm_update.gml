@@ -23,11 +23,11 @@ function alarm_update(_timeJump=1) {
 						}
 						ds_priority_change_priority(__alarmsSync, self, self.time);
 					} else {
-						/*self.func(self.data, self);
+						self.func(self.data, self);
 						if (self.destroyed)
 							self.del();
 						else
-							self.stop();*/
+							self.stop();
 					}
 				}
 			} else {
