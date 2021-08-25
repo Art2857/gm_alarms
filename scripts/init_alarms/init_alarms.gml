@@ -26,7 +26,7 @@ function ClassAlarm() constructor { // Выступает одновременн
 	self.timer           = 0;                           // время таймера, до последнего запуска
 										                
 	self.destroyed       = false;                       // Удалить после активации(true) или нет(false)
-	self.func            = __alarm_default_func         // функция, которая сработает при истечении времени
+	self.func            = alarm_default_func         // функция, которая сработает при истечении времени
 	self.loop            = false;	                    // true - повторять, false - исполнить один раз
 	self.sync            = true;                        /* true - выполняется в шагах игры(время указывается в шагах), 
                                                          * false - в реальном времени(время указывается в секундах)
@@ -36,6 +36,8 @@ function ClassAlarm() constructor { // Выступает одновременн
 						                                 * будильник мог произойти n раз, тогда и функция будет инициализирована n раз. 
 						                                 * Работает только с sync=false и loop=true.
 							                             */
+	
+	self.link			 = self;
 	
 	static set_name      = function(_argName)           { return alarm_set_name(self, _argName);           } // Устанавливает название будильника
 	static set_sync      = function(_argSync, _argTime) { return alarm_set_sync(self, _argSync, _argTime); } // Устанавливаем тип будильника и время
@@ -122,5 +124,3 @@ function alarm_settings(_alarm, _settings) {
 	
 	return _alarm;
 }
-
-function __alarm_default_func() {};

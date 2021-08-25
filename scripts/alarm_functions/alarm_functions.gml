@@ -41,11 +41,12 @@
 
 /// @param [setting]
 function alarm_create(/*{setting}*/) {
-
+	
 	var _thisAlarm = new ClassAlarm(); // Создаём будильник
 	
 	_thisAlarm.name = _thisAlarm; // Устанавливаем имя как идентификатор самого себя
 	_thisAlarm.data = undefined;
+	_thisAlarm.link = self;
 	
 	ds_map_add(__alarms, _thisAlarm.name, _thisAlarm);
 	
@@ -199,8 +200,10 @@ function alarm_get_data(_thisAlarm) {
 }
 
 function alarm_set_func(_thisAlarm, _callback) {
-	if (!is_method(_callback))   _callback  = __alarm_default_func;
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	if (is_method(_callback))     _callback = method_get_index(_callback);
+	if (!is_numeric(_callback) or !script_exists(_callback))
+								  _callback = alarm_default_func;
 	_thisAlarm.func = _callback;
 	return _thisAlarm;
 }

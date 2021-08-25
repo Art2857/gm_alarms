@@ -14,18 +14,20 @@ function alarm_update(_timeJump=1) {
 						if (self.timeSet > 0) {
 							if (self.repeating) {
 								var _rep = ceil((__time - self.time) / self.timeSet);
-								repeat _rep {
-									self.func(self.data, self);
+								with (self.link) {
+									repeat _rep {
+										other.func(other.data, other);
+									}
 								}
 								self.time += _rep * self.timeSet;
 							} else {
-								self.func(self.data, self);
+								with (self.link) other.func(other.data, other);
 								self.time = __time + self.timeSet;
 							}
 							ds_priority_change_priority(__alarmsSync, self, self.time);
 						}
 					} else {
-						self.func(self.data, self);
+						with (self.link) other.func(other.data, other);
 						if (self.destroyed)
 							self.del();
 						else
@@ -51,18 +53,20 @@ function alarm_update(_timeJump=1) {
 						if (self.timeSet > 0) {
 							if (self.repeating) {
 								var _rep = ceil((current_time - self.time) / self.timeSet);
-								repeat _rep {
-									self.func(self.data, self);
+								with (self.link) {
+									repeat _rep {
+										other.func(other.data, other);
+									}
 								}
 								self.time += _rep * self.timeSet;
 							} else {
-								self.func(self.data, self);
+								with (self.link) other.func(other.data, other);
 								self.time = current_time + self.timeSet;
 							}
 							ds_priority_change_priority(__alarmsAsync, self, self.time);
 						}
 					} else {
-						self.func(self.data, self);
+						with (self.link) other.func(other.data, other);
 						if (self.destroyed)
 							self.del();
 						else

@@ -16,7 +16,7 @@ alarm_limit_sync(1, 100, function(data, this) {
 		count2++;
 		show_debug_message([count1, count2]);
 		
-		show_message(object_get_name(id.object_index));
+		//show_message(object_get_name(id.object_index));
 	});
 });
 

@@ -1,6 +1,7 @@
 {
   "resources": [
     {"id":{"name":"alarm_functions","path":"scripts/alarm_functions/alarm_functions.yy",},"order":0,},
+    {"id":{"name":"alarm_supports","path":"scripts/alarm_supports/alarm_supports.yy",},"order":4,},
     {"id":{"name":"obj_control","path":"objects/obj_control/obj_control.yy",},"order":0,},
     {"id":{"name":"obj_test","path":"objects/obj_test/obj_test.yy",},"order":1,},
     {"id":{"name":"alarm_update","path":"scripts/alarm_update/alarm_update.yy",},"order":2,},

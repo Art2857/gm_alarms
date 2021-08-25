@@ -1,54 +1,42 @@
-#macro ALARM_DEFAULT_SELFBING true
 
 // Синхронный будильник
-function alarm_sync(_time, _callback, _data, _selfbind=ALARM_DEFAULT_SELFBING) {
-	if (_selfbind && is_method(_callback)) _callback = method(self, _callback);
+function alarm_sync(_time, _callback, _data) {
 	return alarm_create({func: _callback, data: _data, destroyed: true}).resume().set(_time);
 }
 // https://vk.com/clubgamemakerpro
 
 // Асинхронный будильник
-function alarm_async(_time, _callback, _data, _selfbind=ALARM_DEFAULT_SELFBING) {
-	if (_selfbind && is_method(_callback)) _callback = method(self, _callback);
+function alarm_async(_time, _callback, _data) {
 	return alarm_create({func: _callback, sync: false, destroyed: true, data: _data}).resume().set(_time);
 }
 // https://vk.com/clubgamemakerpro
 
 // Синхронный зацикленный будильник
-function alarm_loop_sync(_time, _callback, _data, _selfbind=ALARM_DEFAULT_SELFBING) {
-	if (_selfbind && is_method(_callback)) _callback = method(self, _callback);
+function alarm_loop_sync(_time, _callback, _data) {
 	return alarm_create({func: _callback, loop: true, data: _data}).resume().set(_time);
 }
 // https://vk.com/clubgamemakerpro
 
 // Асинхронный зацикленный будильник
-function alarm_loop_async(_time, _callback, _data, _selfbind=ALARM_DEFAULT_SELFBING) {
-	if (_selfbind && is_method(_callback)) _callback = method(self, _callback);
+function alarm_loop_async(_time, _callback, _data) {
 	return alarm_create({func: _callback, loop: true, sync: false, data: _data}).resume().set(_time);
 }
 // https://vk.com/clubgamemakerpro
 
 // Синхронный зацикленный будильник с повторениями(Если между alarm_update будильник мог сработать несколько раз, то он срабатывает несколько раз...)
-function alarm_repeat_sync(_time, _callback, _data, _selfbind=ALARM_DEFAULT_SELFBING) {
-	if (_selfbind && is_method(_callback)) _callback = method(self, _callback);
+function alarm_repeat_sync(_time, _callback, _data) {
 	return alarm_create({func: _callback, data: _data, loop: true, sync: true, repeating: true}).resume().set(_time);
 }
 // https://vk.com/clubgamemakerpro
 
 // Асинхронный зацикленный будильник с повторениями(Если между alarm_update будильник мог сработать несколько раз, то он срабатывает несколько раз...)
-function alarm_repeat_async(_time, _callback, _data, _selfbind=ALARM_DEFAULT_SELFBING) {
-	if (_selfbind && is_method(_callback)) _callback = method(self, _callback);
+function alarm_repeat_async(_time, _callback, _data) {
 	return alarm_create({func: _callback, data: _data, loop: true, sync: false, repeating: true}).resume().set(_time);
 }
 // https://vk.com/clubgamemakerpro
 
 // Временный синхронный зацикленный будильник
-function alarm_limit_sync(_time, _limit, _callback, _data, _callback_end, _data_end, _selfbind=ALARM_DEFAULT_SELFBING) {
-	if (_selfbind) {
-		if (is_method(_callback)) _callback = method(self, _callback);
-		if (is_method(_callback_end)) _callback_end = method(self, _callback_end);
-	}
-	
+function alarm_limit_sync(_time, _limit, _callback, _data, _callback_end, _data_end) {
 	var _alarm_loop = alarm_loop_sync(_time,
 	function(_data, _this) {
 		if (_this.time < _this[$ "alarm_limit"].time) {
@@ -69,12 +57,7 @@ function alarm_limit_sync(_time, _limit, _callback, _data, _callback_end, _data_
 // https://vk.com/clubgamemakerpro
 
 // Временный асинхронный зацикленный будильник
-function alarm_limit_async(_time, _limit, _callback, _data, _callback_end, _data_end, _selfbind=ALARM_DEFAULT_SELFBING) {
-	if (_selfbind) {
-		if (is_method(_callback)) _callback = method(self, _callback);
-		if (is_method(_callback_end)) _callback_end = method(self, _callback_end);
-	}
-	
+function alarm_limit_async(_time, _limit, _callback, _data, _callback_end, _data_end) {
 	var _alarm_loop = alarm_loop_async(_time,
 	function(_data, _this) {
 		if (_this.time < _this[$ "alarm_limit"].time) {
@@ -95,11 +78,7 @@ function alarm_limit_async(_time, _limit, _callback, _data, _callback_end, _data
 // https://vk.com/clubgamemakerpro
 
 // Временный синхронный зацикленный будильник c повторением
-function alarm_limit_repeat_sync(_time, _limit, _callback, _data, _callback_end, _data_end, _selfbind=ALARM_DEFAULT_SELFBING) {
-	if (_selfbind) {
-		if (is_method(_callback)) _callback = method(self, _callback);
-		if (is_method(_callback_end)) _callback_end = method(self, _callback_end);
-	}
+function alarm_limit_repeat_sync(_time, _limit, _callback, _data, _callback_end, _data_end) {
 	var _alarm_loop = alarm_repeat_sync(_time, _callback, _data);
 	_alarm_loop[$ "alarm_stoped"] = alarm_sync(_limit, 
 		function(_data) {
@@ -113,11 +92,7 @@ function alarm_limit_repeat_sync(_time, _limit, _callback, _data, _callback_end,
 // https://vk.com/clubgamemakerpro
 
 // Временный асинхронный зацикленный будильник c повторением
-function alarm_limit_repeat_async(_time, _limit, _callback, _data, _callback_end, _data_end, _selfbind=ALARM_DEFAULT_SELFBING) {
-	if (_selfbind) {
-		if (is_method(_callback)) _callback = method(self, _callback);
-		if (is_method(_callback_end)) _callback_end = method(self, _callback_end);
-	}
+function alarm_limit_repeat_async(_time, _limit, _callback, _data, _callback_end, _data_end) {
 	var _alarm_loop = alarm_repeat_async(_time, _callback, _data);
 	_alarm_loop[$ "alarm_stoped"] = alarm_async(_limit, 
 		function(_data) {
