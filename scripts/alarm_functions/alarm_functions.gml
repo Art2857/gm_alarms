@@ -418,16 +418,117 @@ function alarms_count_sync_deactive(){return alarms_count() - alarms_count_async
 
 function alarms_count_async_deactive(){return alarms_count() - alarms_count_sync();}
 
-function alarms_foreach(){}
-function alarms_foreach_playing(){}
+function alarms_foreach(callback, data){
+	var _alarms = ds_map_values_to_array(__alarms);
+	for(var i=0; i<array_length(_alarms); i++){
+		callback(_alarms[i], data);
+	}
+}
+function alarms_foreach_playing_sync(callback, data){
+	var _alarms = ds_priority_create();
+	ds_priority_copy(_alarms, __alarmsSync);
+	repeat ds_priority_size(_alarms){
+		var _alarm = ds_priority_delete_min(_alarms);
+		callback(_alarm, data);
+	}
+}
+function alarms_foreach_playing_async(callback, data){
+	var _alarms = ds_priority_create();
+	ds_priority_copy(_alarms, __alarmsAsync);
+	repeat ds_priority_size(_alarms){
+		var _alarm = ds_priority_delete_min(_alarms);
+		callback(_alarm, data);
+	}
+}
+
+function alarms_foreach_playing(callback, data){
+	alarms_foreach_playing_sync(callback, data);
+	alarms_foreach_playing_async(callback, data);
+}
+
+function alarms_foreach_stoped_sync(){}
+function alarms_foreach_stoped_async(){}
 function alarms_foreach_stoped(){}
 
+function alarms_get(){return ds_map_values_to_array(__alarms);}
 
-function alarms_get(){}
+function alarms_get_playing_sync(){}
+function alarms_get_playing_async(){}
 function alarms_get_playing(){}
+
+function alarms_get_stoped_sync(){}
+function alarms_get_stoped_async(){}
 function alarms_get_stoped(){}
 
 //Для работы с будильниками в пределах объекта
+function alarms_count_object(object_or_struct = self) {
+	var	_alarms_object=_alarms_objects[?object_or_struct];
+	if(_alarms_object !=undefined){
+		return ds_map_size(_alarms_object);	
+	}
+}
+
+function alarms_count_object_playing(object_or_struct = self) {
+
+}
+
+function alarms_count_object_stoped(object_or_struct = self) {
+
+}
+
+function alarms_object_foreach(object_or_struct = self) {}
+function alarms_object_foreach_playing(object_or_struct = self) {}
+function alarms_object_foreach_stoped(object_or_struct = self) {}
+
+
+function alarms_object_get(object_or_struct = self) {
+	var	_alarms_object=_alarms_objects[?object_or_struct];
+	if(_alarms_object !=undefined){
+		return ds_map_values_to_array(_alarms_object);	
+	}
+}
+function alarms_object_get_playing(object_or_struct = self) {}
+function alarms_object_get_stoped(object_or_struct = self) {}
+
+function alarms_object_resume(object_or_struct=self){
+	var	_alarms_object=_alarms_objects[?object_or_struct];
+	if(_alarms_object !=undefined){
+		var _alarm_name = ds_map_find_first(_alarms_object);
+		var _alarm;
+		repeat ds_map_size(_alarms_object) {
+			_alarm = _alarms_object[? _alarm_name];
+			_alarm_name = ds_map_find_next(_alarms_object, _alarm_name);
+			_alarm.resume();
+		}
+	}
+}
+function alarms_object_stop(object_or_struct=self){
+	var	_alarms_object=_alarms_objects[?object_or_struct];
+	if(_alarms_object !=undefined){
+		var _alarm_name = ds_map_find_first(_alarms_object);
+		var _alarm;
+		repeat ds_map_size(_alarms_object) {
+			_alarm = _alarms_object[? _alarm_name];
+			_alarm_name = ds_map_find_next(_alarms_object, _alarm_name);
+			_alarm.stop();
+		}
+	}
+}
+function alarms_object_delete(object_or_struct=self){
+	var	_alarms_object=_alarms_objects[?object_or_struct];
+	if(_alarms_object !=undefined){
+		var _alarm_name = ds_map_find_first(_alarms_object);
+		var _alarm;
+		repeat ds_map_size(_alarms_object) {
+			_alarm = _alarms_object[? _alarm_name];
+			_alarm_name = ds_map_find_next(_alarms_object, _alarm_name);
+			_alarm.del();
+		}
+	}
+}
+
+
+/*
 function alarms_clear(object_or_struct=self) {
 	var	_alarms_object=_alarms_objects[?object_or_struct];
 	if(_alarms_object !=undefined){
@@ -438,24 +539,4 @@ function alarms_clear(object_or_struct=self) {
 		}
 	}
 }
-
-function alarms_count_object(object = self) {
-
-}
-
-function alarms_count_object_active(object = self) {
-
-}
-
-function alarms_count_object_deactive(object = self) {
-
-}
-
-function alarms_object_foreach(object = self) {}
-function alarms_object_foreach_playing(object = self) {}
-function alarms_object_foreach_stoped(object = self) {}
-
-
-function alarms_object_get(object = self) {}
-function alarms_object_get_playing(object = self) {}
-function alarms_object_get_stoped(object = self) {}
+*/

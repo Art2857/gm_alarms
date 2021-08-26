@@ -16,7 +16,7 @@ _alarms_objects=ds_map_create();// { object_or_struct: { alarm_name: alarm , ...
 
 
 function replace_instance_destroy(object = self){
-	alarms_clear(object);
+	alarms_object_delete(object);
 
 	macro_instance_destroy(object);
 }
