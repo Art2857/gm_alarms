@@ -8,7 +8,7 @@ function alarm_update(_timeJump=1) {
 			var _alarm = ds_priority_find_min(__alarmsSync);
 			var _vtime = _alarm.time;
 			var _vfunc = _alarm.func;
-			 
+
 			if (__time >= _vtime) {
 				with (_alarm) {
 					if (self.loop) {

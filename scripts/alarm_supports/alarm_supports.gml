@@ -11,23 +11,23 @@ function alarm_default_func() {};
 //	//case "int64":
 //		if (instance_exists(_object)) {
 			
-			with (_object) return self;
-		}
-		break;
-	}
-	return undefined;
-}
+//			with (_object) return self;
+//		}
+//		break;
+//	}
+//	return undefined;
+//}
 
-function method_bind(_func, _object = self){
-	if(is_method(_func)){
-		_func = method(_object, method_get_index(_func));
-	}else{
-		if(is_numeric(_func) && script_exists(_func)){
-			_func = method(_object, _func);
-		}
-	}
-	return _func;
-}
+//function method_bind(_func, _object = self){
+//	if(is_method(_func)){
+//		_func = method(_object, method_get_index(_func));
+//	}else{
+//		if(is_numeric(_func) && script_exists(_func)){
+//			_func = method(_object, _func);
+//		}
+//	}
+//	return _func;
+//}
 
 //function is_function(_func) {
 	
