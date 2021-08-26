@@ -1,15 +1,16 @@
 
+text="text";
 count1=0;
 count2=0;
 
-alarm_sync(1).set_destroy(false);
-alarm_sync(2);
+alarm_sync(1, function(data, this){show_debug_message(object_get_name(this.link.object_index));}).set_destroy(false);
+alarm_sync(2, method_bind(obj_control.f));
 alarm_sync(3).set_destroy(false);
-alarm_sync(4).set_destroy(false);
+//alarm_sync(4).set_destroy(false);
 alarm_sync(5);
 
 
-
+/*
 alarm_limit_sync(1, 100, function(data, this) {
 	count1++;
 	alarm_limit_sync(1, 100, function(data, this) {

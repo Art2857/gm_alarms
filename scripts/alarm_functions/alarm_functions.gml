@@ -56,7 +56,7 @@ function alarm_create(/*{setting}*/) {
 	
 	return _thisAlarm; // Возвращаем ново-созданный будильник
 }
-// https://vk.com/clubgamemakerpro
+// https://vk.com / clubgamemakerpro
 
 // Удаляет будильник
 function alarm_delete(_thisAlarm) {
@@ -73,7 +73,7 @@ function alarm_exists(_thisAlarm) {
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	return !is_undefined(__alarms[? _thisAlarm]);
 }
-// https://vk.com/clubgamemakerpro
+// https: // vk.com/clubgamemakerpro
 
 // Возвращает структуру будильника по его установленному имени
 function alarm_find(name) {
@@ -135,7 +135,7 @@ function alarm_replay(_thisAlarm) {
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	return _thisAlarm.resume().set(_thisAlarm.timeSet);
 }
-// https://vk.com/clubgamemakerpro
+// https: // vk.com/clubgamemakerpro
 
 // Запускает будильник
 function alarm_resume(_thisAlarm) {
@@ -164,7 +164,7 @@ function alarm_resume(_thisAlarm) {
 	}
 	return _thisAlarm;
 }
-// https://vk.com/clubgamemakerpro
+// https:/ /vk.com/clubgamemakerpro
 
 // Устанавливаем время, через которое сработает будильник
 function alarm_set_duration(_thisAlarm, _argTime=1) {
@@ -201,8 +201,8 @@ function alarm_get_data(_thisAlarm) {
 
 function alarm_set_func(_thisAlarm, _callback) {
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
-	if (is_method(_callback))     _callback = method_get_index(_callback);
-	if (!is_numeric(_callback) or !script_exists(_callback))
+	//if (is_method(_callback))     _callback = method_get_index(_callback);
+	if ((is_numeric(_callback) && !script_exists(_callback)) || !_callback)
 								  _callback = alarm_default_func;
 	_thisAlarm.func = _callback;
 	return _thisAlarm;
@@ -233,7 +233,7 @@ function alarm_set_name(_thisAlarm, _argName) {
 	}
 	return _thisAlarm;
 }
-// https://vk.com/clubgamemakerpro
+// https://vk.com/ clubgamemakerpro
 
 // Смена режим будильника и время срабатывания будильника
 function alarm_set_sync(_thisAlarm, _argSync, _argTime=1) {
@@ -301,7 +301,7 @@ function alarm_timer_clear(_thisAlarm) {
 	}
 	return _thisAlarm;
 }
-// https://vk.com/clubgamemakerpro
+// https://vk. com/clubgamemakerpro
 
 // Возвращает время таймера
 function alarm_timer_get(_thisAlarm) {
@@ -316,7 +316,7 @@ function alarm_timer_get(_thisAlarm) {
 		return self.timer;
 	}
 }
-// https://vk.com/clubgamemakerpro
+// https://vk.com/ clubgamemakerpro
 
 // Обнуляем таймер(В случае второго аргумента - устанавливаем значение)
 function alarm_timer_reset(_thisAlarm, _time=0) {
@@ -329,7 +329,7 @@ function alarm_timer_reset(_thisAlarm, _time=0) {
 	}
 	return _thisAlarm;
 }
-// https://vk.com/clubgamemakerpro
+// https ://vk.com/clubgamemakerpro
 
 // Остановить все будильники
 function alarms_all_stop() {
@@ -339,7 +339,7 @@ function alarms_all_stop() {
 		_key = ds_map_find_next(__alarms, _key);
 	}
 }
-// https://vk.com/clubgamemakerpro
+// https: //vk.com/clubgamemakerpro
 
 // Возобновляем все будильники
 function alarms_all_resume() {
@@ -349,7 +349,7 @@ function alarms_all_resume() {
 		_key = ds_map_find_next(__alarms, _key);
 	}
 }
-// https://vk.com/clubgamemakerpro
+// https:// vk.com/clubgamemakerpro
 
 // Удаляем все будильники
 function alarms_all_delete() {
@@ -361,4 +361,52 @@ function alarms_all_delete() {
 		_alarm.del();
 	}
 }
-// https://vk.com/clubgamemakerpro
+// https://vk.com/clubgam emakerpro
+
+//Для работы со всеми будильниками
+function alarms_count(){
+	return ds_map_size(__alarms);
+}
+
+function alarms_count_active(){
+
+}
+
+function alarms_count_deactive(){
+
+}
+
+function alarms_foreach(){}
+function alarms_foreach_active(){}
+function alarms_foreach_deactive(){}
+
+
+function alarms_get(){}
+function alarms_get_active(){}
+function alarms_get_deactive(){}
+
+//Для работы с будильниками в пределах объекта
+function alarms_clear(object = self){
+	
+}
+
+function alarms_count_object(object = self){
+
+}
+
+function alarms_count_object_active(object = self){
+
+}
+
+function alarms_count_object_deactive(object = self){
+
+}
+
+function alarms_object_foreach(object = self){}
+function alarms_object_foreach_active(object = self){}
+function alarms_object_foreach_deactive(object = self){}
+
+
+function alarms_object_get(object = self){}
+function alarms_object_get_active(object = self){}
+function alarms_object_get_deactive(object = self){}
