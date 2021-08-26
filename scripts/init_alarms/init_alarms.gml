@@ -64,6 +64,7 @@ function ClassAlarm() constructor { // Выступает одновременн
 	self.timer           = 0;                           // время таймера, до последнего запуска
 										                
 	self.destroyed       = false;                       // Удалить после активации(true) или нет(false)
+	self.destroyed_callback = false;
 	self.func            = alarm_default_func         // функция, которая сработает при истечении времени
 	self.loop            = false;	                    // true - повторять, false - исполнить один раз
 	self.sync            = true;                        /* true - выполняется в шагах игры(время указывается в шагах), 
@@ -84,6 +85,7 @@ function ClassAlarm() constructor { // Выступает одновременн
 	static get           = function()                   { return alarm_get_difference(self);               } // Сколько осталось времени до срабатывания будильника
 	
 	static set_destroy   = function(_destroyed)         { return alarm_set_destroy(self, _destroyed);      } //
+	static set_destroy_callback = function(_destroyed){return alarm_set_destroy_callback(self, _destroyed);}
 	static set_loop      = function(_loop)              { self.loop = _loop;                               } //
 	
 	static get_lost      = function()                   { return alarm_get_lost(self);                     } //

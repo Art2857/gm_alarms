@@ -72,7 +72,8 @@ function alarm_limit_async(_time, _limit, _callback, _data, _callback_end, _data
 				if (is_method(_data.callback_end)) _data.callback_end(_data.data_end);
 			}
 			alarm_delete(_data.alarm_loop);
-		}, {alarm_loop: _alarm_loop, callback_end: _callback_end, data_end: _data_end});
+		}, {alarm_loop: _alarm_loop, callback_end: _callback_end, data_end: _data_end})
+		.set_destroy(true).set_destroy_callback(true);
 		
 	return _alarm_loop[$ "alarm_limit"];
 }
@@ -93,7 +94,8 @@ function alarm_limit_repeat_sync(_time, _limit, _callback, _data, _callback_end,
 				if (is_method(_data.callback_end)) _data.callback_end(_data.data_end);
 			}
 			alarm_delete(_data.alarm_loop);
-		}, {alarm_loop: _alarm_loop, callback_end: _callback_end, data_end: _data_end});
+		}, {alarm_loop: _alarm_loop, callback_end: _callback_end, data_end: _data_end})
+		.set_destroy(true).set_destroy_callback(true);
 		
 	return _alarm_loop[$ "alarm_limit"];
 }
@@ -114,7 +116,8 @@ function alarm_limit_repeat_async(_time, _limit, _callback, _data, _callback_end
 				if (is_method(_data.callback_end)) _data.callback_end(_data.data_end);
 			}
 			alarm_delete(_data.alarm_loop);
-		}, {alarm_loop: _alarm_loop, callback_end: _callback_end, data_end: _data_end});
+		}, {alarm_loop: _alarm_loop, callback_end: _callback_end, data_end: _data_end})
+		.set_destroy(true).set_destroy_callback(true);
 		
 	return _alarm_loop[$ "alarm_limit"];
 }
@@ -122,14 +125,14 @@ function alarm_limit_repeat_async(_time, _limit, _callback, _data, _callback_end
 
 
 function alarm_limit_delete(_alarm_limit) {
-	alarm_delete(_alarm_limit[$ "alarm_limit"]);
+	alarm_delete(_alarm_limit[$ "alarm_loop"]);
 	alarm_delete(_alarm_limit);
 }
 function alarm_limit_stop(_alarm_limit) {
-	alarm_stop(_alarm_limit[$ "alarm_limit"]);
+	alarm_stop(_alarm_limit[$ "alarm_loop"]);
 	alarm_stop(_alarm_limit);
 }
 function alarm_limit_resume(_alarm_limit) {
-	alarm_resume(_alarm_limit[$ "alarm_limit"]);
+	alarm_resume(_alarm_limit[$ "alarm_loop"]);
 	alarm_resume(_alarm_limit);
 }

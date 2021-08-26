@@ -70,6 +70,17 @@ function alarm_create(/*{setting}*/) {
 // Удаляет будильник
 function alarm_delete(_thisAlarm) {
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	
+	if(
+	(_thisAlarm.destroyed_callback == 1) ||
+	(_thisAlarm.destroyed_callback == 2 && _thisAlarm.status == true) || 
+	(_thisAlarm.destroyed_callback == 3 && _thisAlarm.status == false)){
+		with (_thisAlarm) {
+			var _vfunc = _thisAlarm.func;
+			with (self.link) _vfunc(other.data, other);
+		}
+	}
+	
 	ds_priority_delete_value(__alarmsSync, _thisAlarm);
 	ds_priority_delete_value(__alarmsAsync, _thisAlarm);
 	ds_map_delete(__alarms, _thisAlarm.name);
@@ -297,6 +308,19 @@ function alarm_stop(_thisAlarm) {
 function alarm_set_destroy(_thisAlarm, _destroyed) {
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	_thisAlarm.destroyed = _destroyed;
+	
+	return _thisAlarm;
+}
+
+function alarm_set_destroy_callback(_thisAlarm, _destroyed) {
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	_thisAlarm.destroyed_callback = _destroyed;
+	
+	return _thisAlarm;
+}
+
+function alarm_get_destroy_callback(_thisAlarm){
+	return _thisAlarm.destroyed_callback;
 }
 
 // Обнуляем таймер будильника
@@ -395,22 +419,22 @@ function alarms_count_sync_deactive(){return alarms_count() - alarms_count_async
 function alarms_count_async_deactive(){return alarms_count() - alarms_count_sync();}
 
 function alarms_foreach(){}
-function alarms_foreach_active(){}
-function alarms_foreach_deactive(){}
+function alarms_foreach_playing(){}
+function alarms_foreach_stoped(){}
 
 
 function alarms_get(){}
-function alarms_get_active(){}
-function alarms_get_deactive(){}
+function alarms_get_playing(){}
+function alarms_get_stoped(){}
 
 //Для работы с будильниками в пределах объекта
 function alarms_clear(object_or_struct=self) {
-	var	_alarms_object	=	_alarms_objects	[?	object_or_struct	]	;
-	if(_alarms_object != undefined){
-		var	_alarms	=	ds_map_values_to_array(	_alarms_object	)	;
-		for	(	var	i	=	0	;	i	<	array_length	(	_alarms	)	;	i	++	)	{
-			var	_alarm	=	_alarms	[	i	]	;
-			alarm_delete(	_alarm	)	;
+	var	_alarms_object=_alarms_objects[?object_or_struct];
+	if(_alarms_object !=undefined){
+		var	_alarms=ds_map_values_to_array(_alarms_object);
+		for	(var i=0;i<array_length(_alarms	);i++){
+			var	_alarm=_alarms[i];
+			alarm_delete(_alarm);
 		}
 	}
 }
@@ -428,10 +452,10 @@ function alarms_count_object_deactive(object = self) {
 }
 
 function alarms_object_foreach(object = self) {}
-function alarms_object_foreach_active(object = self) {}
-function alarms_object_foreach_deactive(object = self) {}
+function alarms_object_foreach_playing(object = self) {}
+function alarms_object_foreach_stoped(object = self) {}
 
 
 function alarms_object_get(object = self) {}
-function alarms_object_get_active(object = self) {}
-function alarms_object_get_deactive(object = self) {}
+function alarms_object_get_playing(object = self) {}
+function alarms_object_get_stoped(object = self) {}
