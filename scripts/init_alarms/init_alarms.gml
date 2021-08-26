@@ -1,11 +1,60 @@
-/// Синхронные и асинхронные будильники V3.2
-
-if (variable_global_exists("__alarms")) exit;
+/// Синхронные и асинхронные будильники V3.3
 
 // https://vk.com/clubgamemakerpro
 // Асинхронные будильники отличаются от синхронных, тем что не зависят от fps
 // Колбэк - это функция, которая произойдёт при активации будильника
 // Синхронные будильники задаются в шагах игры, асинхронные в милисекундах (в секунде - 1000 милисекунд)
+
+if (variable_global_exists("__alarms")) exit;
+
+globalvar _alarms_objects;
+
+_alarms_objects=ds_map_create();
+
+#macro instance_create_depth macro_instance_create_depth
+#macro instance_create_layer macro_instance_create_layer
+#macro instance_destroy macro_instance_destroy
+
+function macro_instance_create_depth(x, y, depth, obj){
+	
+	instance_create_depth(x, y, depth, obj);
+}
+
+function macro_instance_create_layer(x, y, layer_id_or_name, obj){
+	
+	instance_create_layer(x, y, layer_id_or_name, obj);
+}
+
+function macro_instance_destroy(object = self){
+	
+	alarms_clear(object);
+	
+	instance_destroy(object);
+}
+
+function macro_instance_activate_all(){
+	//instance_activate_all()
+}
+
+function macro_instance_activate_object(){
+	//instance_activate_object()
+}
+
+function macro_instance_activate_region(){
+	//instance_activate_region()
+}
+
+function macro_instance_deactivate_all(){
+	//instance_deactivate_all()
+}
+
+function macro_instance_deactivate_object(){
+	//instance_deactivate_object()
+}
+
+function macro_instance_deactivate_region(){
+	//instance_deactivate_region()
+}
 
 globalvar __alarms, __alarmsSync, __alarmsAsync, __minSync, __minAsync, __time;
 __alarms      = ds_map_create();      // Все будильники
@@ -21,17 +70,17 @@ function ClassAlarm() constructor { // Выступает одновременн
 	self.status          = false;                       // true - работает, false - остановлен
 	self.time            = 0;                           // Время, когда сработает будильник
 	self.timeSet         = 1;                           // Через какое время будильник сработает(Каждые ...)
-
+				         				                
 	self.timePoint       = 0;                           // Время, когда будильник был остановлен или запущен
 	self.timer           = 0;                           // время таймера, до последнего запуска
-
+										                
 	self.destroyed       = false;                       // Удалить после активации(true) или нет(false)
-	self.func            = alarm_default_func           // функция, которая сработает при истечении времени
+	self.func            = alarm_default_func         // функция, которая сработает при истечении времени
 	self.loop            = false;	                    // true - повторять, false - исполнить один раз
 	self.sync            = true;                        /* true - выполняется в шагах игры(время указывается в шагах), 
                                                          * false - в реальном времени(время указывается в секундах)
 					      			                     */
-
+										                
 	self.repeating       = false;                       /* Если за время между вызовами alarm_update, 
 						                                 * будильник мог произойти n раз, тогда и функция будет инициализирована n раз. 
 						                                 * Работает только с sync=false и loop=true.

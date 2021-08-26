@@ -79,42 +79,56 @@ function alarm_limit_async(_time, _limit, _callback, _data, _callback_end, _data
 
 // Временный синхронный зацикленный будильник c повторением
 function alarm_limit_repeat_sync(_time, _limit, _callback, _data, _callback_end, _data_end) {
-	var _alarm_loop = alarm_repeat_sync(_time, _callback, _data);
-	_alarm_loop[$ "alarm_stoped"] = alarm_sync(_limit, 
+	var _alarm_loop = alarm_repeat_sync(_time,
+	function(_data, _this) {
+		if (_this.time < _this[$ "alarm_limit"].time) {
+			_data.callback(_data.data, _this[$ "alarm_limit"], _this);
+		}
+	}, {callback: _callback, data: _data});
+	
+	_alarm_loop[$ "alarm_limit"] = alarm_sync(_limit + 1, 
 		function(_data) {
 			if (alarm_exists(_data.alarm_loop)) {
 				if (is_method(_data.callback_end)) _data.callback_end(_data.data_end);
 			}
 			alarm_delete(_data.alarm_loop);
 		}, {alarm_loop: _alarm_loop, callback_end: _callback_end, data_end: _data_end});
-	return _alarm_loop;
+		
+	return _alarm_loop[$ "alarm_limit"];
 }
 // https://vk.com/clubgamemakerpro
 
 // Временный асинхронный зацикленный будильник c повторением
 function alarm_limit_repeat_async(_time, _limit, _callback, _data, _callback_end, _data_end) {
-	var _alarm_loop = alarm_repeat_async(_time, _callback, _data);
-	_alarm_loop[$ "alarm_stoped"] = alarm_async(_limit, 
+	var _alarm_loop = alarm_repeat_async(_time,
+	function(_data, _this) {
+		if (_this.time < _this[$ "alarm_limit"].time) {
+			_data.callback(_data.data, _this[$ "alarm_limit"], _this);
+		}
+	}, {callback: _callback, data: _data});
+	
+	_alarm_loop[$ "alarm_limit"] = alarm_async(_limit + 1, 
 		function(_data) {
 			if (alarm_exists(_data.alarm_loop)) {
 				if (is_method(_data.callback_end)) _data.callback_end(_data.data_end);
 			}
 			alarm_delete(_data.alarm_loop);
 		}, {alarm_loop: _alarm_loop, callback_end: _callback_end, data_end: _data_end});
-	return _alarm_loop;
+		
+	return _alarm_loop[$ "alarm_limit"];
 }
 // https://vk.com/clubgamemakerpro
 
 
 function alarm_limit_delete(_alarm_limit) {
-	alarm_delete(_alarm_limit[$ "alarm_stoped"]);
+	alarm_delete(_alarm_limit[$ "alarm_limit"]);
 	alarm_delete(_alarm_limit);
 }
 function alarm_limit_stop(_alarm_limit) {
-	alarm_stop(_alarm_limit[$ "alarm_stoped"]);
+	alarm_stop(_alarm_limit[$ "alarm_limit"]);
 	alarm_stop(_alarm_limit);
 }
 function alarm_limit_resume(_alarm_limit) {
-	alarm_resume(_alarm_limit[$ "alarm_stoped"]);
+	alarm_resume(_alarm_limit[$ "alarm_limit"]);
 	alarm_resume(_alarm_limit);
 }
