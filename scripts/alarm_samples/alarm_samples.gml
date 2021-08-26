@@ -50,7 +50,8 @@ function alarm_limit_sync(_time, _limit, _callback, _data, _callback_end, _data_
 				if (is_method(_data.callback_end)) _data.callback_end(_data.data_end);
 			}
 			alarm_delete(_data.alarm_loop);
-		}, {alarm_loop: _alarm_loop, callback_end: _callback_end, data_end: _data_end});
+		}, {alarm_loop: _alarm_loop, callback_end: _callback_end, data_end: _data_end})
+		.set_destroy(true).set_destroy_callback(true);
 		
 	return _alarm_loop[$ "alarm_limit"];
 }

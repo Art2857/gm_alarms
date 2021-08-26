@@ -9,27 +9,16 @@ if (variable_global_exists("__alarms")) exit;
 
 globalvar _alarms_objects;
 
-_alarms_objects=ds_map_create();
+_alarms_objects=ds_map_create();// { object_or_struct: { alarm_name: alarm , ... } , ... }
 
-#macro instance_create_depth macro_instance_create_depth
-#macro instance_create_layer macro_instance_create_layer
-#macro instance_destroy macro_instance_destroy
+#macro instance_destroy replace_instance_destroy
+#macro macro_instance_destroy instance_destroy
 
-function macro_instance_create_depth(x, y, depth, obj){
-	
-	instance_create_depth(x, y, depth, obj);
-}
 
-function macro_instance_create_layer(x, y, layer_id_or_name, obj){
-	
-	instance_create_layer(x, y, layer_id_or_name, obj);
-}
-
-function macro_instance_destroy(object = self){
-	
+function replace_instance_destroy(object = self){
 	alarms_clear(object);
-	
-	instance_destroy(object);
+
+	macro_instance_destroy(object);
 }
 
 function macro_instance_activate_all(){

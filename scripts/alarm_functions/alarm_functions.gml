@@ -48,11 +48,20 @@ function alarm_create(/*{setting}*/) {
 	_thisAlarm.data = undefined;
 	_thisAlarm.link = self;
 	
-	ds_map_add(__alarms, _thisAlarm.name, _thisAlarm);
 	
 	if (argument_count > 0) {             // Если при создании были указны настройки в структуре
 		_thisAlarm.settings(argument[0]); // то применяем их к ново-созданному будильнику
 	}
+	
+	ds_map_add(__alarms, _thisAlarm.name, _thisAlarm);
+	
+	var _alarms_object = _alarms_objects[? self];
+	if(_alarms_object == undefined){
+		_alarms_object = ds_map_create();
+		ds_map_add(_alarms_objects, self, _alarms_object);
+	}
+	
+	ds_map_add(_alarms_object, _thisAlarm.name, _thisAlarm);
 	
 	return _thisAlarm; // Возвращаем ново-созданный будильник
 }
@@ -369,13 +378,21 @@ function alarms_count(){
 	return ds_map_size(__alarms);
 }
 
-function alarms_count_active(){
+function alarms_count_sync(){return ds_priority_size(__alarmsSync);}
 
+function alarms_count_async(){return ds_priority_size(__alarmsAsync);}
+
+function alarms_count_active(){
+	return alarms_count_sync() + alarms_count_async();
 }
 
 function alarms_count_deactive(){
-
+	return alarms_count() - alarms_count_active();
 }
+
+function alarms_count_sync_deactive(){return alarms_count() - alarms_count_async();}
+
+function alarms_count_async_deactive(){return alarms_count() - alarms_count_sync();}
 
 function alarms_foreach(){}
 function alarms_foreach_active(){}
@@ -387,8 +404,15 @@ function alarms_get_active(){}
 function alarms_get_deactive(){}
 
 //Для работы с будильниками в пределах объекта
-function alarms_clear(object = self) {
-	
+function alarms_clear(object_or_struct=self) {
+	var	_alarms_object	=	_alarms_objects	[?	object_or_struct	]	;
+	if(_alarms_object != undefined){
+		var	_alarms	=	ds_map_values_to_array(	_alarms_object	)	;
+		for	(	var	i	=	0	;	i	<	array_length	(	_alarms	)	;	i	++	)	{
+			var	_alarm	=	_alarms	[	i	]	;
+			alarm_delete(	_alarm	)	;
+		}
+	}
 }
 
 function alarms_count_object(object = self) {
