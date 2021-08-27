@@ -1,6 +1,4 @@
 
-function alarm_default_func() {};
-
 //function struct_get_struct(_object) {
 //	switch (typeof(_object)) {
 //	case "struct":

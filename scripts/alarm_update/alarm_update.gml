@@ -29,10 +29,11 @@ function alarm_update(_timeJump=1) {
 						}
 					} else {
 						with (self.link) _vfunc(other.data, other);
-						if (self.destroyed)
+						if (self.destroyed){
 							self.del();
-						else
+						}else{
 							self.stop();
+						}
 					}
 				}
 			} else {
@@ -69,10 +70,11 @@ function alarm_update(_timeJump=1) {
 						}
 					} else {
 						with (self.link) _vfunc(other.data, other);
-						if (self.destroyed)
+						if (self.destroyed){
 							self.del();
-						else
+						}else{
 							self.stop();
+						}
 					}
 				}
 			} else {

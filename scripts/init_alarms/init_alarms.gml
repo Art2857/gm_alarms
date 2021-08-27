@@ -7,42 +7,128 @@
 
 if (variable_global_exists("__alarms")) exit;
 
-globalvar _alarms_objects;
+function alarm_default_func() {};
+
+globalvar _alarms_objects, _objects_deactive;
 
 _alarms_objects=ds_map_create();// { object_or_struct: { alarm_name: alarm , ... } , ... }
+_objects_deactive=ds_map_create();// { object: { alarm_name: alarm , ... } , ... }
 
 #macro instance_destroy replace_instance_destroy
 #macro macro_instance_destroy instance_destroy
-
-
 function replace_instance_destroy(object = self){
 	alarms_object_delete(object);
 
 	macro_instance_destroy(object);
 }
 
-function macro_instance_activate_all(){
-	//instance_activate_all()
+#macro instance_activate_all replace_instance_activate_all
+#macro macro_instance_activate_all instance_activate_all
+function replace_instance_activate_all(){
+	macro_instance_activate_all();
+	
+	var object = ds_map_find_first(_objects_deactive);
+	repeat ds_map_size(_objects_deactive){
+		var _alarms = _objects_deactive[? object], _alarm_name, _alarm;
+		
+		_alarm_name = ds_map_find_first(_alarms);
+		repeat ds_map_size(_alarms){
+			_alarm = _alarms[? _alarm_name];
+			_alarm.resume();
+			
+			with _alarm{
+				var _vfunc = self.activated;
+				with (self.link) _vfunc(other.data, other);
+			}
+			
+			_alarm_name = ds_map_find_next(_alarms, _alarm_name);
+		}
+		ds_map_clear(_alarms);
+		
+		/*for(var i = 0; i < array_length(_alarms); i++){
+			_alarm = _alarms[i];
+			_alarm.resume();
+		}
+		array_resize(_alarms, 0);
+		*/
+		/*with object {
+			var _alarms = alarms_object_get_playing(self), _alarm;//alarms_object_resume(self);
+			for(var i = 0; i < array_length(_alarms); i++){
+				_alarm = _alarms[i];
+				_alarm.resume();
+			}
+		}*/
+		object = ds_map_find_next(_objects_deactive, object);
+	}
+	
+	ds_map_clear(_objects_deactive);
 }
 
-function macro_instance_activate_object(){
-	//instance_activate_object()
+#macro instance_activate_object replace_instance_activate_object
+#macro macro_instance_activate_object instance_activate_object
+function replace_instance_activate_object(obj){
+	macro_instance_activate_object(obj);
+	
+	with obj{
+		//alarms_object_resume(self);
+		
+		var _alarms = _objects_deactive[? self], _alarm_name, _alarm;
+		
+		_alarm_name = ds_map_find_first(_alarms);
+		repeat ds_map_size(_alarms){
+			_alarm = _alarms[? _alarm_name];
+			_alarm.resume();
+			
+			with _alarm{
+				var _vfunc = self.activated;
+				with (self.link) _vfunc(other.data, other);
+			}
+			
+			_alarm_name = ds_map_find_next(_alarms, _alarm_name);
+		}
+		ds_map_clear(_alarms);
+		
+		ds_map_delete(_objects_deactive, self);
+	}
 }
 
-function macro_instance_activate_region(){
-	//instance_activate_region()
+#macro instance_activate_region replace_instance_activate_region
+#macro macro_instance_activate_region instance_activate_region
+function replace_instance_activate_region(left, top, width, height, inside){
+	macro_instance_activate_region(left, top, width, height, inside);
 }
 
-function macro_instance_deactivate_all(){
-	//instance_deactivate_all()
+#macro instance_deactivate_all replace_instance_deactivate_all
+#macro macro_instance_deactivate_all instance_deactivate_all
+function replace_instance_deactivate_all(notme){
+	
+	ds_map_clear(_objects_deactive);
+	with all{
+		if(!notme || (notme && self.id != other.id)){
+			ds_map_add(_objects_deactive, self, self);
+			alarms_object_stop(self);
+		}
+	}
+	
+	macro_instance_deactivate_all(notme);
 }
 
-function macro_instance_deactivate_object(){
-	//instance_deactivate_object()
+#macro instance_deactivate_object replace_instance_deactivate_object
+#macro macro_instance_deactivate_object instance_deactivate_object
+function replace_instance_deactivate_object(obj){
+	
+	with obj{
+		alarms_object_stop(self);
+		ds_map_add(_objects_deactive, self, self);
+	}
+	
+	macro_instance_deactivate_object(obj);
 }
 
-function macro_instance_deactivate_region(){
-	//instance_deactivate_region()
+#macro instance_deactivate_region replace_instance_deactivate_region
+#macro macro_instance_deactivate_region instance_deactivate_region
+function replace_instance_deactivate_region(left, top, width, height, inside, notme){
+	macro_instance_deactivate_region(left, top, width, height, inside, notme);
 }
 
 globalvar __alarms, __alarmsSync, __alarmsAsync, __minSync, __minAsync, __time;
@@ -58,14 +144,16 @@ function ClassAlarm() constructor { // Выступает одновременн
 	
 	self.status          = false;                       // true - работает, false - остановлен
 	self.time            = 0;                           // Время, когда сработает будильник
-	self.timeSet         = 1;                           // Через какое время будильник сработает(Каждые ...)
+	self.timeSet         = 0;                           // Через какое время будильник сработает(Каждые ...)
 				         				                
 	self.timePoint       = 0;                           // Время, когда будильник был остановлен или запущен
 	self.timer           = 0;                           // время таймера, до последнего запуска
 										                
 	self.destroyed       = false;                       // Удалить после активации(true) или нет(false)
-	self.destroyed_callback = false;
-	self.func            = alarm_default_func         // функция, которая сработает при истечении времени
+	self.destroyed_callback = false;					// Исполнить колбэк при удалении
+	self.activated = alarm_default_func;				// Исполнить колбэк при активации объекта
+	self.deactivated = alarm_default_func;				// Исполнить колбэк при деактивации объекта
+	self.func            = alarm_default_func;			// функция, которая сработает при истечении времени
 	self.loop            = false;	                    // true - повторять, false - исполнить один раз
 	self.sync            = true;                        /* true - выполняется в шагах игры(время указывается в шагах), 
                                                          * false - в реальном времени(время указывается в секундах)

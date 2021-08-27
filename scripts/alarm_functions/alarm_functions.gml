@@ -54,7 +54,6 @@ function alarm_create(/*{setting}*/) {
 	}
 	
 	ds_map_add(__alarms, _thisAlarm.name, _thisAlarm);
-	
 	var _alarms_object = _alarms_objects[? self];
 	if(_alarms_object == undefined){
 		_alarms_object = ds_map_create();
@@ -79,6 +78,17 @@ function alarm_delete(_thisAlarm) {
 			var _vfunc = _thisAlarm.func;
 			with (self.link) _vfunc(other.data, other);
 		}
+	}else{
+		if(is_method(_thisAlarm.destroyed_callback)){
+			var _vfunc = _thisAlarm.destroyed_callback;
+			with (self.link) _vfunc(other.data, other);
+		}
+	}
+	
+	var _alarms_object = _alarms_objects[? _thisAlarm.link];
+	//show_message_async(_thisAlarm.link);
+	if(_alarms_object != undefined){
+		ds_map_delete(_alarms_object, _thisAlarm.name);
 	}
 	
 	ds_priority_delete_value(__alarmsSync, _thisAlarm);
@@ -162,23 +172,26 @@ function alarm_resume(_thisAlarm) {
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	with (_thisAlarm) {
 		if (!self.status) {
-			self.status = true; 
-			if (self.sync) {
-				self.time     += __time - self.timePoint;
-				self.timePoint = __time;
-				if (self.time < __minSync) __minSync = self.time;
-				if (is_undefined(ds_priority_find_priority(__alarmsSync, self)))
-					ds_priority_add(__alarmsSync, self, self.time);
-				else
-					ds_priority_change_priority(__alarmsSync, self, self.time);
-			} else {
-				self.time     += current_time - self.timePoint;
-				self.timePoint = current_time;
-				if (self.time < __minAsync) __minAsync = self.time;
-				if (is_undefined(ds_priority_find_priority(__alarmsAsync, self)))
-					ds_priority_add(__alarmsAsync, self, time);
-				else
-					ds_priority_change_priority(__alarmsAsync, self, self.time);
+			if(self.timeSet>0){
+				show_message(["timeSet", self.status, self.timeSet]);
+				self.status = true;
+				if (self.sync) {
+					self.time     += __time - self.timePoint;
+					self.timePoint = __time;
+					if (self.time < __minSync) __minSync = self.time;
+					if (is_undefined(ds_priority_find_priority(__alarmsSync, self)))
+						ds_priority_add(__alarmsSync, self, self.time);
+					else
+						ds_priority_change_priority(__alarmsSync, self, self.time);
+				} else {
+					self.time     += current_time - self.timePoint;
+					self.timePoint = current_time;
+					if (self.time < __minAsync) __minAsync = self.time;
+					if (is_undefined(ds_priority_find_priority(__alarmsAsync, self)))
+						ds_priority_add(__alarmsAsync, self, time);
+					else
+						ds_priority_change_priority(__alarmsAsync, self, self.time);
+				}
 			}
 		}
 	}
@@ -500,11 +513,14 @@ function alarms_object_resume(object_or_struct=self){
 			_alarm_name = ds_map_find_next(_alarms_object, _alarm_name);
 			_alarm.resume();
 		}
+		return true;
 	}
 }
 function alarms_object_stop(object_or_struct=self){
 	var	_alarms_object=_alarms_objects[?object_or_struct];
+	//show_message_async([object_or_struct, _alarms_object]);
 	if(_alarms_object !=undefined){
+		show_message_async(ds_map_size(_alarms_object));
 		var _alarm_name = ds_map_find_first(_alarms_object);
 		var _alarm;
 		repeat ds_map_size(_alarms_object) {
@@ -512,6 +528,7 @@ function alarms_object_stop(object_or_struct=self){
 			_alarm_name = ds_map_find_next(_alarms_object, _alarm_name);
 			_alarm.stop();
 		}
+		return true;
 	}
 }
 function alarms_object_delete(object_or_struct=self){
@@ -524,6 +541,7 @@ function alarms_object_delete(object_or_struct=self){
 			_alarm_name = ds_map_find_next(_alarms_object, _alarm_name);
 			_alarm.del();
 		}
+		return true;
 	}
 }
 
