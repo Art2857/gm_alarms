@@ -3,7 +3,7 @@ text = "Hello";
 
 destroy = alarm_create({timeSet: 1, func: function(){ show_debug_message("alarm!"); }});
 
-destroy.set_destroy_callback(function(){ show_debug_message("Destroy!"); });
+destroy.set_destroy(true).set_destroy_callback(function(){ show_debug_message("Destroy!"); });
 
 /*alarm_loop_sync(10, function() {
 	show_debug_message(__time);
@@ -18,5 +18,5 @@ limit = alarm_limit_sync(5, 50, function() {
 });
 
 limit.set(10000);
-limit.data.alarm_loop.set(10);
+limit.data.alarm_loop.set(1);
 

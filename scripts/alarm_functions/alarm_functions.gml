@@ -5,11 +5,11 @@
 	self - Возвратный идентификатор будильника
 	name - имя будильника
 	status - статус будильник, запущен(true) или остановлен(false*)
-	time -Время, когда сработает будильник
+	time - Время, когда сработает будильник
 	timeSet - промежуток, через который срабатывает будильник
 	timePoint - время последнего изменения состояния будильника
 	timer - время таймера, до последнего запуска
-	sync - будильник делает отчёт в шагах игры(true*) или в реальном времени(false)
+	sync - будильник делает отcчёт в шагах игры(true*) или в реальном времени(false)
 	
 Параметры(Для чтения и установки):
 	func - функция активации будильника function(){}* (функции вызываются в пространстве будильника)
@@ -31,7 +31,7 @@
 	timer_clear - идентично alarm_timer_clear
 	timer_reset - идентично alarmTimer
 	del - идентично alarm_delete
-	settings - идентично unite
+	settings - установка параметров 
 	
 Примеры:
 	alarm_create().метод1().метод2();
@@ -64,10 +64,8 @@ function alarm_create(/*{setting}*/) {
 	
 	return _thisAlarm; // Возвращаем ново-созданный будильник
 }
-// https://vk.com / clubgamemakerpro
 
-// Удаляет будильник
-function alarm_delete(_thisAlarm) {
+function alarm_delete(_thisAlarm) {// Удаляет будильник
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	
 	if(
@@ -86,7 +84,6 @@ function alarm_delete(_thisAlarm) {
 	}
 	
 	var _alarms_object = _alarms_objects[? _thisAlarm.link];
-	//show_message_async(_thisAlarm.link);
 	if(_alarms_object != undefined){
 		ds_map_delete(_alarms_object, _thisAlarm.name);
 	}
@@ -96,23 +93,17 @@ function alarm_delete(_thisAlarm) {
 	ds_map_delete(__alarms, _thisAlarm.name);
 	delete _thisAlarm;
 }
-// https://vk.com/clubgamemakerpro
 
-// Проверяем на существование будильник по его имени
-function alarm_exists(_thisAlarm) {
+function alarm_exists(_thisAlarm) {// Проверяем на существование будильник по его имени
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	return !is_undefined(__alarms[? _thisAlarm]);
 }
-// https: // vk.com/clubgamemakerpro
 
-// Возвращает структуру будильника по его установленному имени
-function alarm_find(name) {
+function alarm_find(name) {// Возвращает структуру будильника по его установленному имени
 	return __alarms[? name];
 }
-// https://vk.com/clubgamemakerpro
 
-// Возвращает разницу от текущего времени до срабатывания будильника
-function alarm_get_difference(_thisAlarm) {
+function alarm_get_difference(_thisAlarm) {// Возвращает разницу от текущего времени до срабатывания будильника
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	with (_thisAlarm) {
 		if (self.status) {
@@ -124,22 +115,18 @@ function alarm_get_difference(_thisAlarm) {
 		return (self.time - self.timePoint);
 	}
 }
-// https://vk.com/clubgamemakerpro
 
-// Возвращает время до срабатывания будильника
-function alarm_get_done_time(_thisAlarm) {
+function alarm_get_done_time(_thisAlarm) {// Возвращает время до срабатывания будильника
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	return (_thisAlarm.get_lost() == 0);
 }
-// https://vk.com/clubgamemakerpro
 
 function alarm_get_duration(_thisAlarm) {
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	return _thisAlarm.timeSet;
 }
 
-// Возвращает время до срабатывания будильника
-function alarm_get_lost(_thisAlarm) {
+function alarm_get_lost(_thisAlarm) {// Возвращает время до срабатывания будильника
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	with (_thisAlarm) {
 		if (self.status) {
@@ -151,7 +138,6 @@ function alarm_get_lost(_thisAlarm) {
 		return max(0, self.time- self.timePoint);
 	}
 }
-// https://vk.com/clubgamemakerpro
 
 function alarm_get_progress(_thisAlarm) {
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
@@ -160,20 +146,16 @@ function alarm_get_progress(_thisAlarm) {
 	}
 }
 
-// Перезапускает будильник
-function alarm_replay(_thisAlarm) {
+function alarm_replay(_thisAlarm) {// Перезапускает будильник
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	return _thisAlarm.resume().set(_thisAlarm.timeSet);
 }
-// https: // vk.com/clubgamemakerpro
 
-// Запускает будильник
-function alarm_resume(_thisAlarm) {
+function alarm_resume(_thisAlarm) {// Запускает будильник
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	with (_thisAlarm) {
 		if (!self.status) {
 			if(self.timeSet>0){
-				show_message(["timeSet", self.status, self.timeSet]);
 				self.status = true;
 				if (self.sync) {
 					self.time     += __time - self.timePoint;
@@ -197,10 +179,8 @@ function alarm_resume(_thisAlarm) {
 	}
 	return _thisAlarm;
 }
-// https:/ /vk.com/clubgamemakerpro
 
-// Устанавливаем время, через которое сработает будильник
-function alarm_set_duration(_thisAlarm, _argTime=1) {
+function alarm_set_duration(_thisAlarm, _argTime=1) {// Устанавливаем время, через которое сработает будильник
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	_argTime = max(_argTime, 1);
 	with (_thisAlarm) {
@@ -219,7 +199,6 @@ function alarm_set_duration(_thisAlarm, _argTime=1) {
 	}
 	return _thisAlarm;
 }
-// https://vk.com/clubgamemakerpro
 
 function alarm_set_data(_thisAlarm, _data) {
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
@@ -247,8 +226,7 @@ function alarm_get_func(_thisAlarm) {
 	return _thisAlarm.func;
 }
 
-// Устанавливаем название будильника. Поиск будьника через alarm_find(name)
-function alarm_set_name(_thisAlarm, _argName) {
+function alarm_set_name(_thisAlarm, _argName) {// Устанавливаем название будильника. Поиск будьника через alarm_find(name)
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	with (_thisAlarm) {
 		ds_map_delete(__alarms, self.name);
@@ -267,10 +245,8 @@ function alarm_set_name(_thisAlarm, _argName) {
 	}
 	return _thisAlarm;
 }
-// https://vk.com/ clubgamemakerpro
 
-// Смена режим будильника и время срабатывания будильника
-function alarm_set_sync(_thisAlarm, _argSync, _argTime=1) {
+function alarm_set_sync(_thisAlarm, _argSync = true, _argTime=1) {// Смена режим будильника и время срабатывания будильника
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	_argTime = max(_argTime, 1);
 	with (_thisAlarm) {
@@ -295,10 +271,8 @@ function alarm_set_sync(_thisAlarm, _argSync, _argTime=1) {
 	}
 	return _thisAlarm;
 }
-// https://vk.com/clubgamemakerpro
 
-// Останавливает будильник
-function alarm_stop(_thisAlarm) {
+function alarm_stop(_thisAlarm) {// Останавливает будильник
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	with (_thisAlarm) {
 		if (self.status) {
@@ -316,16 +290,15 @@ function alarm_stop(_thisAlarm) {
 	}
 	return _thisAlarm;
 }
-// https://vk.com/clubgamemakerpro
 
-function alarm_set_destroy(_thisAlarm, _destroyed) {
+function alarm_set_destroy(_thisAlarm, _destroyed = true) {
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	_thisAlarm.destroyed = _destroyed;
 	
 	return _thisAlarm;
 }
 
-function alarm_set_destroy_callback(_thisAlarm, _destroyed) {
+function alarm_set_destroy_callback(_thisAlarm, _destroyed = true) {
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	_thisAlarm.destroyed_callback = _destroyed;
 	
@@ -336,8 +309,7 @@ function alarm_get_destroy_callback(_thisAlarm){
 	return _thisAlarm.destroyed_callback;
 }
 
-// Обнуляем таймер будильника
-function alarm_timer_clear(_thisAlarm) {
+function alarm_timer_clear(_thisAlarm) {// Обнуляем таймер будильника
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	with (_thisAlarm) {
 		self.timer = 0;
@@ -348,10 +320,8 @@ function alarm_timer_clear(_thisAlarm) {
 	}
 	return _thisAlarm;
 }
-// https://vk. com/clubgamemakerpro
 
-// Возвращает время таймера
-function alarm_timer_get(_thisAlarm) {
+function alarm_timer_get(_thisAlarm) {// Возвращает время таймера
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	with (_thisAlarm) {
 		if (self.status) {
@@ -363,10 +333,8 @@ function alarm_timer_get(_thisAlarm) {
 		return self.timer;
 	}
 }
-// https://vk.com/ clubgamemakerpro
 
-// Обнуляем таймер(В случае второго аргумента - устанавливаем значение)
-function alarm_timer_reset(_thisAlarm, _time=0) {
+function alarm_timer_reset(_thisAlarm, _time=0) {// Обнуляем таймер(В случае второго аргумента - устанавливаем значение)
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	with (_thisAlarm) {
 		var _prestatus = self.status;
@@ -376,30 +344,41 @@ function alarm_timer_reset(_thisAlarm, _time=0) {
 	}
 	return _thisAlarm;
 }
-// https ://vk.com/clubgamemakerpro
 
-// Остановить все будильники
-function alarms_all_stop() {
+function alarm_is_playing(_alarm){
+	return _alarm.status;
+}
+
+function alarm_is_stoped(_alarm){
+	return !_alarm.status;
+}
+
+function alarm_is_sync(_alarm){
+	return _alarm.sync;
+}
+
+function alarm_is_async(_alarm){
+	return !_alarm.sync;
+}
+
+//Для работы со всеми будильниками
+function alarms_all_stop() {// Остановить все будильники
 	var _key = ds_map_find_first(__alarms);
 	repeat ds_map_size(__alarms) {
 		__alarms[? _key].stop();
 		_key = ds_map_find_next(__alarms, _key);
 	}
 }
-// https: //vk.com/clubgamemakerpro
 
-// Возобновляем все будильники
-function alarms_all_resume() {
+function alarms_all_resume() {// Возобновляем все будильники
 	var _key = ds_map_find_first(__alarms);
 	repeat ds_map_size(__alarms) {
 		__alarms[? _key].resume();
 		_key = ds_map_find_next(__alarms, _key);
 	}
 }
-// https:// vk.com/clubgamemakerpro
 
-// Удаляем все будильники
-function alarms_all_delete() {
+function alarms_all_delete() {// Удаляем все будильники
 	var _key = ds_map_find_first(__alarms);
 	var _alarm;
 	repeat ds_map_size(__alarms) {
@@ -408,102 +387,530 @@ function alarms_all_delete() {
 		_alarm.del();
 	}
 }
-// https://vk.com/clubgam emakerpro
 
-//Для работы со всеми будильниками
-function alarms_count(){
+function alarms_count(){// Возвращает кол-во всех будильников
 	return ds_map_size(__alarms);
 }
 
-function alarms_count_sync(){return ds_priority_size(__alarmsSync);}
-
-function alarms_count_async(){return ds_priority_size(__alarmsAsync);}
-
-function alarms_count_active(){
-	return alarms_count_sync() + alarms_count_async();
+function alarms_count_playing_sync(){// Возвращает кол-во всех запущенных синхронных будильников
+	return ds_priority_size(__alarmsSync);
 }
 
-function alarms_count_deactive(){
-	return alarms_count() - alarms_count_active();
+function alarms_count_playing_async(){// Возвращает кол-во всех запущенных асинхронных будильников
+	return ds_priority_size(__alarmsAsync);
 }
 
-function alarms_count_sync_deactive(){return alarms_count() - alarms_count_async();}
+function alarms_count_sync(){
+	var _alarms = ds_priority_create(), _alarm, count = 0;
+	ds_priority_copy(_alarms, __alarmsSync);
+	repeat ds_priority_size(_alarms){
+		_alarm = ds_priority_delete_min(_alarms);
+		count += alarm_is_sync(_alarm);
+	}
+	ds_priority_destroy(_alarms);
+	return count;
+}
 
-function alarms_count_async_deactive(){return alarms_count() - alarms_count_sync();}
+function alarms_count_async(){
+	var _alarms = ds_priority_create(), _alarm, count = 0;
+	ds_priority_copy(_alarms, __alarmsAsync);
+	repeat ds_priority_size(_alarms){
+		_alarm = ds_priority_delete_min(_alarms);
+		count += alarm_is_sync(_alarm);
+	}
+	ds_priority_destroy(_alarms);
+	return count;
+}
 
-function alarms_foreach(callback, data){
-	var _alarms = ds_map_values_to_array(__alarms);
+function alarms_count_playing(){// Возвращает кол-во всех запущенных будильников
+	return alarms_count_playing_sync() + alarms_count_playing_async();
+}
+
+function alarms_count_stoped(){// Возвращает кол-во всех остановленных будильников
+	return alarms_count() - alarms_count_playing();
+}
+
+function alarms_count_stoped_sync(){// Возвращает кол-во всех остановленных синхронных будильников
+	return alarms_count() - alarms_count_playing_async();
+}
+
+function alarms_count_stoped_async(){// Возвращает кол-во всех остановленных асинхронных будильников
+	return alarms_count() - alarms_count_playing_sync();
+}
+
+function alarms_foreach(callback, data = undefined){// Выполняется колбэк для всех будильников
+	var _alarms = ds_map_values_to_array(__alarms), _alarm, result;
 	for(var i=0; i<array_length(_alarms); i++){
-		callback(_alarms[i], data);
+		_alarm = _alarms[i];
+		if(alarm_exists(_alarm)){
+			result = callback(_alarm, data);
+			if(result != undefined){return result;}
+		}
 	}
 }
-function alarms_foreach_playing_sync(callback, data){
+
+function alarms_foreach_playing_sync(callback, data = undefined){// Выполняется колбэк для всех запущенных синхронных будильников
+	var _alarms = ds_priority_create(), _alarm, result;
+	ds_priority_copy(_alarms, __alarmsSync);
+	repeat ds_priority_size(_alarms){
+		_alarm = ds_priority_delete_min(_alarms);
+		result = callback(_alarm, data);
+		if(result != undefined){ds_priority_destroy(_alarms); return result;}
+	}
+	ds_priority_destroy(_alarms);
+}
+	
+function alarms_foreach_playing_async(callback, data = undefined){// Выполняется колбэк для всех запущенных асинхронных будильников
+	var _alarms = ds_priority_create(), _alarm, result;
+	ds_priority_copy(_alarms, __alarmsAsync);
+	repeat ds_priority_size(_alarms){
+		var _alarm = ds_priority_delete_min(_alarms);
+		result = callback(_alarm, data);
+		if(result != undefined){ds_priority_destroy(_alarms); return result;}
+	}
+	ds_priority_destroy(_alarms);
+}
+
+function alarms_foreach_playing(callback, data = undefined){// Выполняется колбэк для всех запущенных будильников
+	var result;
+	result = alarms_foreach_playing_sync(callback, data);
+	if(result != undefined){return result;}
+	result = alarms_foreach_playing_async(callback, data);
+	if(result != undefined){return result;}
+}
+
+function alarms_foreach_stoped_sync(callback, data = undefined){// Выполняется колбэк для всех остановленных синхронных будильников
+	var _alarms = ds_map_values_to_array(__alarms), _alarm, result;
+	for(var i=0; i<array_length(_alarms); i++){
+		_alarm = _alarms[i];
+		if(alarm_exists(_alarm) && alarm_is_sync() && alarm_is_stoped()){
+			result = callback(_alarm, data);
+			if(result != undefined){return result;}
+		}
+	}
+}
+
+function alarms_foreach_stoped_async(callback, data = undefined){// Выполняется колбэк для всех остановленных асинхронных будильников
+	var _alarms = ds_map_values_to_array(__alarms), _alarm, result;
+	for(var i=0; i<array_length(_alarms); i++){
+		_alarm = _alarms[i];
+		if(alarm_exists(_alarm) && alarm_is_async() && alarm_is_stoped()){
+			result = callback(_alarm, data);
+			if(result != undefined){return result;}
+		}
+	}
+}
+
+function alarms_foreach_stoped(callback, data = undefined){// Выполняется колбэк для всех остановленных будильников
+	var _alarms = ds_map_values_to_array(__alarms), _alarm, result;
+	for(var i=0; i<array_length(_alarms); i++){
+		_alarm = _alarms[i];
+		if(alarm_exists(_alarm) && alarm_is_stoped()){
+			result = callback(_alarm, data);
+			if(result != undefined){return result;}
+		}
+	}
+}
+
+function alarms_get(){// Возвращает массив всех алармов
+	return ds_map_values_to_array(__alarms);
+}
+
+function alarms_get_playing_sync(){// Возвращает массив запущенных синхронных будильников
+	var array = [];
 	var _alarms = ds_priority_create();
 	ds_priority_copy(_alarms, __alarmsSync);
 	repeat ds_priority_size(_alarms){
 		var _alarm = ds_priority_delete_min(_alarms);
-		callback(_alarm, data);
+		array_push(array, _alarm);
 	}
+	ds_priority_destroy(_alarms);
+	return array;
 }
-function alarms_foreach_playing_async(callback, data){
+
+function alarms_get_playing_async(){// Возвращает массив запущенных асинхронных будильников
+	var array = [];
 	var _alarms = ds_priority_create();
 	ds_priority_copy(_alarms, __alarmsAsync);
 	repeat ds_priority_size(_alarms){
 		var _alarm = ds_priority_delete_min(_alarms);
-		callback(_alarm, data);
+		array_push(array, _alarm);
 	}
+	ds_priority_destroy(_alarms);
+	return array;
 }
 
-function alarms_foreach_playing(callback, data){
-	alarms_foreach_playing_sync(callback, data);
-	alarms_foreach_playing_async(callback, data);
+function alarms_get_playing(){// Возвращает массив запущенных будильников
+	var array = [];
+	
+	var _alarms = ds_priority_create();
+	ds_priority_copy(_alarms, __alarmsSync);
+	repeat ds_priority_size(_alarms){
+		var _alarm = ds_priority_delete_min(_alarms);
+		array_push(array, _alarm);
+	}
+	ds_priority_destroy(_alarms);
+	
+	var _alarms = ds_priority_create();
+	ds_priority_copy(_alarms, __alarmsAsync);
+	repeat ds_priority_size(_alarms){
+		var _alarm = ds_priority_delete_min(_alarms);
+		array_push(array, _alarm);
+	}
+	ds_priority_destroy(_alarms);
+	
+	return array;
 }
 
-function alarms_foreach_stoped_sync(){}
-function alarms_foreach_stoped_async(){}
-function alarms_foreach_stoped(){}
+function alarms_get_stoped_sync(){// Возвращает массив остановленных синхронных будильников
+	var array = [];
+	var _alarms = ds_map_values_to_array(__alarms), _alarm;
+	for(var i=0; i<array_length(_alarms); i++){
+		_alarm = _alarms[i];
+		if(alarm_exists(_alarm) && alarm_is_sync() && alarm_is_stoped()){
+			array_push(array, _alarm);
+		}
+	}
+	return array;
+}
 
-function alarms_get(){return ds_map_values_to_array(__alarms);}
+function alarms_get_stoped_async(){// Возвращает массив остановленных асинхронных будильников
+	var array = [];
+	var _alarms = ds_map_values_to_array(__alarms), _alarm;
+	for(var i=0; i<array_length(_alarms); i++){
+		_alarm = _alarms[i];
+		if(alarm_exists(_alarm) && alarm_is_async() && alarm_is_stoped()){
+			array_push(array, _alarm);
+		}
+	}
+	return array;
+}
 
-function alarms_get_playing_sync(){}
-function alarms_get_playing_async(){}
-function alarms_get_playing(){}
-
-function alarms_get_stoped_sync(){}
-function alarms_get_stoped_async(){}
-function alarms_get_stoped(){}
+function alarms_get_stoped(){// Возвращает массив остановленных будильников
+	var array = [];
+	var _alarms = ds_map_values_to_array(__alarms), _alarm;
+	for(var i=0; i<array_length(_alarms); i++){
+		_alarm = _alarms[i];
+		if(alarm_exists(_alarm) && alarm_is_stoped()){
+			array_push(array, _alarm);
+		}
+	}
+	return array;
+}
 
 //Для работы с будильниками в пределах объекта
-function alarms_count_object(object_or_struct = self) {
-	var	_alarms_object=_alarms_objects[?object_or_struct];
-	if(_alarms_object !=undefined){
+function alarms_count_object(object_or_struct = self) {// Возвращает кол-во будильников принадлежащих указанному объекту или структуре
+	var	_alarms_object = _alarms_objects[? object_or_struct];
+	if(_alarms_object != undefined){
 		return ds_map_size(_alarms_object);	
 	}
 }
 
-function alarms_count_object_playing(object_or_struct = self) {
-
+function alarms_count_object_playing_sync(object_or_struct = self){// Возвращает кол-во запущенных синхронных будильников принадлежащих указанному объекту или структуре
+	var count = 0;
+	var	_alarms_object = _alarms_objects[? object_or_struct];
+	if(_alarms_object != undefined){
+		
+		var _alarms = ds_map_values_to_array(_alarms_object), _alarm;
+		for(var i=0; i<array_length(_alarms); i++){
+			_alarm = _alarms[i];
+			if(alarm_exists(_alarm) && alarm_is_sync() && alarm_is_playing()){
+				count++;
+			}
+		}
+	}
+	return count;
 }
 
-function alarms_count_object_stoped(object_or_struct = self) {
-
+function alarms_count_object_playing_async(object_or_struct = self){// Возвращает кол-во запущенных асинхронных будильников принадлежащих указанному объекту или структуре
+	var count = 0;
+	var	_alarms_object = _alarms_objects[? object_or_struct];
+	if(_alarms_object != undefined){
+		
+		var _alarms = ds_map_values_to_array(_alarms_object), _alarm;
+		for(var i=0; i<array_length(_alarms); i++){
+			_alarm = _alarms[i];
+			if(alarm_exists(_alarm) && alarm_is_async() && alarm_is_playing()){
+				count++;
+			}
+		}
+	}
+	return count;
 }
 
-function alarms_object_foreach(object_or_struct = self) {}
-function alarms_object_foreach_playing(object_or_struct = self) {}
-function alarms_object_foreach_stoped(object_or_struct = self) {}
+function alarms_count_object_stoped_sync(object_or_struct = self){// Возвращает кол-во остановленных синхронных будильников принадлежащих указанному объекту или структуре
+	var count = 0;
+	var	_alarms_object = _alarms_objects[? object_or_struct];
+	if(_alarms_object != undefined){
+		
+		var _alarms = ds_map_values_to_array(_alarms_object), _alarm;
+		for(var i=0; i<array_length(_alarms); i++){
+			_alarm = _alarms[i];
+			if(alarm_exists(_alarm) && alarm_is_stoped() && alarm_is_sync()){
+				count++;
+			}
+		}
+	}
+	return count;
+}
 
+function alarms_count_object_stoped_async(object_or_struct = self){// Возвращает кол-во остановленных асинхронных будильников принадлежащих указанному объекту или структуре
+	var count = 0;
+	var	_alarms_object = _alarms_objects[? object_or_struct];
+	if(_alarms_object != undefined){
+		
+		var _alarms = ds_map_values_to_array(_alarms_object), _alarm;
+		for(var i=0; i<array_length(_alarms); i++){
+			_alarm = _alarms[i];
+			if(alarm_exists(_alarm) && alarm_is_stoped() && alarm_is_async()){
+				count++;
+			}
+		}
+	}
+	return count;
+}
 
-function alarms_object_get(object_or_struct = self) {
+function alarms_count_object_playing(object_or_struct = self) {// Возвращает кол-во запущенных будильников принадлежащих указанному объекту или структуре
+	var count = 0;
+	var	_alarms_object = _alarms_objects[? object_or_struct];
+	if(_alarms_object != undefined){
+		
+		var _alarms = ds_map_values_to_array(_alarms_object), _alarm;
+		for(var i=0; i<array_length(_alarms); i++){
+			_alarm = _alarms[i];
+			if(alarm_exists(_alarm) && alarm_is_playing()){
+				count++;
+			}
+		}
+	}
+	return count;
+}
+
+function alarms_count_object_stoped(object_or_struct = self) {// Возвращает кол-во остановленных будильников принадлежащих указанному объекту или структуре
+var count = 0;
+	var	_alarms_object = _alarms_objects[? object_or_struct];
+	if(_alarms_object != undefined){
+		
+		var _alarms = ds_map_values_to_array(_alarms_object), _alarm;
+		for(var i=0; i<array_length(_alarms); i++){
+			_alarm = _alarms[i];
+			if(alarm_exists(_alarm) && alarm_is_stoped()){
+				count++;
+			}
+		}
+	}
+	return count;
+}
+
+function alarms_object_foreach(object_or_struct = self, callback, data = undefined) {// 
+	var	_alarms_object = _alarms_objects[? object_or_struct];
+	if(_alarms_object != undefined){
+		var _alarms = ds_map_values_to_array(_alarms_object), _alarm, result;
+		for(var i=0; i<array_length(_alarms); i++){
+			_alarm = _alarms[i];
+			if(alarm_exists(_alarm)){
+				result = callback(_alarm, data);
+				if(result != undefined){return result;}
+			}
+		}
+		return false;
+	}
+}
+
+function alarms_object_foreach_playing_sync(object_or_struct = self, callback, data = undefined){// 
+	var	_alarms_object = _alarms_objects[? object_or_struct];
+	if(_alarms_object != undefined){
+		var _alarms = ds_map_values_to_array(_alarms_object), _alarm, result;
+		for(var i=0; i<array_length(_alarms); i++){
+			_alarm = _alarms[i];
+			if(alarm_exists(_alarm) && alarm_is_playing(_alarm) && alarm_is_sync(_alarm)){
+				result = callback(_alarm, data);
+				if(result != undefined){return result;}
+			}
+		}
+		return false;
+	}
+}
+
+function alarms_object_foreach_playing_async(object_or_struct = self, callback, data = undefined){// 
+	var	_alarms_object = _alarms_objects[? object_or_struct];
+	if(_alarms_object != undefined){
+		var _alarms = ds_map_values_to_array(_alarms_object), _alarm, result;
+		for(var i=0; i<array_length(_alarms); i++){
+			_alarm = _alarms[i];
+			if(alarm_exists(_alarm) && alarm_is_playing(_alarm) && alarm_is_async(_alarm)){
+				result = callback(_alarm, data);
+				if(result != undefined){return result;}
+			}
+		}
+		return false;
+	}
+}
+
+function alarms_object_foreach_stoped_sync(object_or_struct = self, callback, data = undefined){// 
+	var	_alarms_object = _alarms_objects[? object_or_struct];
+	if(_alarms_object != undefined){
+		var _alarms = ds_map_values_to_array(_alarms_object), _alarm, result;
+		for(var i=0; i<array_length(_alarms); i++){
+			_alarm = _alarms[i];
+			if(alarm_exists(_alarm) && alarm_is_stoped(_alarm) && alarm_is_sync(_alarm)){
+				result = callback(_alarm, data);
+				if(result != undefined){return result;}
+			}
+		}
+		return false;
+	}
+}
+
+function alarms_object_foreach_stoped_async(object_or_struct = self, callback, data = undefined){// 
+	var	_alarms_object = _alarms_objects[? object_or_struct];
+	if(_alarms_object != undefined){
+		var _alarms = ds_map_values_to_array(_alarms_object), _alarm, result;
+		for(var i=0; i<array_length(_alarms); i++){
+			_alarm = _alarms[i];
+			if(alarm_exists(_alarm) && alarm_is_stoped(_alarm) && alarm_is_async(_alarm)){
+				result = callback(_alarm, data);
+				if(result != undefined){return result;}
+			}
+		}
+		return false;
+	}
+}
+
+function alarms_object_foreach_playing(object_or_struct = self, callback, data = undefined) {// 
+	var	_alarms_object = _alarms_objects[? object_or_struct];
+	if(_alarms_object != undefined){
+		var _alarms = ds_map_values_to_array(_alarms_object), _alarm, result;
+		for(var i=0; i<array_length(_alarms); i++){
+			_alarm = _alarms[i];
+			if(alarm_exists(_alarm) && alarm_is_playing(_alarm)){
+				result = callback(_alarm, data);
+				if(result != undefined){return result;}
+			}
+		}
+		return false;
+	}
+}
+
+function alarms_object_foreach_stoped(object_or_struct = self, callback, data = undefined) {// 
+	var	_alarms_object = _alarms_objects[? object_or_struct];
+	if(_alarms_object != undefined){
+		var _alarms = ds_map_values_to_array(_alarms_object), _alarm, result;
+		for(var i=0; i<array_length(_alarms); i++){
+			_alarm = _alarms[i];
+			if(alarm_exists(_alarm) && alarm_is_stoped(_alarm)){
+				result = callback(_alarm, data);
+				if(result != undefined){return result;}
+			}
+		}
+		return false;
+	}
+}
+
+function alarms_object_get(object_or_struct = self) {// 
 	var	_alarms_object=_alarms_objects[?object_or_struct];
 	if(_alarms_object !=undefined){
 		return ds_map_values_to_array(_alarms_object);	
 	}
 }
-function alarms_object_get_playing(object_or_struct = self) {}
-function alarms_object_get_stoped(object_or_struct = self) {}
 
-function alarms_object_resume(object_or_struct=self){
+function alarms_object_get_playing_sync(object_or_struct = self){// 
+	var array = [];
+	var	_alarms_object = _alarms_objects[? object_or_struct];
+	if(_alarms_object != undefined){
+		var _alarms = ds_map_values_to_array(_alarms_object), _alarm, result;
+		for(var i=0; i<array_length(_alarms); i++){
+			_alarm = _alarms[i];
+			if(alarm_exists(_alarm) && alarm_is_playing(_alarm) && alarm_is_sync(_alarm)){
+				array_push(array, _alarm);
+			}
+		}
+		return false;
+	}
+	return array;
+}
+
+function alarms_object_get_playing_async(object_or_struct = self){// 
+	var array = [];
+	var	_alarms_object = _alarms_objects[? object_or_struct];
+	if(_alarms_object != undefined){
+		var _alarms = ds_map_values_to_array(_alarms_object), _alarm, result;
+		for(var i=0; i<array_length(_alarms); i++){
+			_alarm = _alarms[i];
+			if(alarm_exists(_alarm) && alarm_is_playing(_alarm) && alarm_is_async(_alarm)){
+				array_push(array, _alarm);
+			}
+		}
+		return false;
+	}
+	return array;
+}
+
+function alarms_object_get_stoped_sync(object_or_struct = self){// 
+	var array = [];
+	var	_alarms_object = _alarms_objects[? object_or_struct];
+	if(_alarms_object != undefined){
+		var _alarms = ds_map_values_to_array(_alarms_object), _alarm, result;
+		for(var i=0; i<array_length(_alarms); i++){
+			_alarm = _alarms[i];
+			if(alarm_exists(_alarm) && alarm_is_stoped(_alarm) && alarm_is_sync(_alarm)){
+				array_push(array, _alarm);
+			}
+		}
+		return false;
+	}
+	return array;
+}
+
+function alarms_object_get_stoped_async(object_or_struct = self){// 
+	var array = [];
+	var	_alarms_object = _alarms_objects[? object_or_struct];
+	if(_alarms_object != undefined){
+		var _alarms = ds_map_values_to_array(_alarms_object), _alarm, result;
+		for(var i=0; i<array_length(_alarms); i++){
+			_alarm = _alarms[i];
+			if(alarm_exists(_alarm) && alarm_is_stoped(_alarm) && alarm_is_async(_alarm)){
+				array_push(array, _alarm);
+			}
+		}
+		return false;
+	}
+	return array;
+}
+
+function alarms_object_get_playing(object_or_struct = self) {// 
+	var array = [];
+	var	_alarms_object = _alarms_objects[? object_or_struct];
+	if(_alarms_object != undefined){
+		var _alarms = ds_map_values_to_array(_alarms_object), _alarm, result;
+		for(var i=0; i<array_length(_alarms); i++){
+			_alarm = _alarms[i];
+			if(alarm_exists(_alarm) && alarm_is_playing(_alarm)){
+				array_push(array, _alarm);
+			}
+		}
+		return false;
+	}
+	return array;
+}
+
+function alarms_object_get_stoped(object_or_struct = self) {// 
+	var array = [];
+	var	_alarms_object = _alarms_objects[? object_or_struct];
+	if(_alarms_object != undefined){
+		var _alarms = ds_map_values_to_array(_alarms_object), _alarm, result;
+		for(var i=0; i<array_length(_alarms); i++){
+			_alarm = _alarms[i];
+			if(alarm_exists(_alarm) && alarm_is_stoped(_alarm)){
+				array_push(array, _alarm);
+			}
+		}
+		return false;
+	}
+	return array;
+}
+
+function alarms_object_resume_all(object_or_struct=self){// 
 	var	_alarms_object=_alarms_objects[?object_or_struct];
 	if(_alarms_object !=undefined){
 		var _alarm_name = ds_map_find_first(_alarms_object);
@@ -516,11 +923,10 @@ function alarms_object_resume(object_or_struct=self){
 		return true;
 	}
 }
-function alarms_object_stop(object_or_struct=self){
+
+function alarms_object_stop_all(object_or_struct=self){// 
 	var	_alarms_object=_alarms_objects[?object_or_struct];
-	//show_message_async([object_or_struct, _alarms_object]);
 	if(_alarms_object !=undefined){
-		show_message_async(ds_map_size(_alarms_object));
 		var _alarm_name = ds_map_find_first(_alarms_object);
 		var _alarm;
 		repeat ds_map_size(_alarms_object) {
@@ -531,7 +937,8 @@ function alarms_object_stop(object_or_struct=self){
 		return true;
 	}
 }
-function alarms_object_delete(object_or_struct=self){
+
+function alarms_object_delete_all(object_or_struct=self){// 
 	var	_alarms_object=_alarms_objects[?object_or_struct];
 	if(_alarms_object !=undefined){
 		var _alarm_name = ds_map_find_first(_alarms_object);
@@ -544,17 +951,3 @@ function alarms_object_delete(object_or_struct=self){
 		return true;
 	}
 }
-
-
-/*
-function alarms_clear(object_or_struct=self) {
-	var	_alarms_object=_alarms_objects[?object_or_struct];
-	if(_alarms_object !=undefined){
-		var	_alarms=ds_map_values_to_array(_alarms_object);
-		for	(var i=0;i<array_length(_alarms	);i++){
-			var	_alarm=_alarms[i];
-			alarm_delete(_alarm);
-		}
-	}
-}
-*/

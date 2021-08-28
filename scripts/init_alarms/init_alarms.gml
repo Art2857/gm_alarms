@@ -9,22 +9,63 @@ if (variable_global_exists("__alarms")) exit;
 
 function alarm_default_func() {};
 
+function instances_get(object__index){// Возвращает массив экземпляров объекта
+	var array = [];
+	with object__index{
+		array_push(array, id);
+	}
+	return array;
+}
+
 globalvar _alarms_objects, _objects_deactive;
 
-_alarms_objects=ds_map_create();// { object_or_struct: { alarm_name: alarm , ... } , ... }
-_objects_deactive=ds_map_create();// { object: { alarm_name: alarm , ... } , ... }
+_alarms_objects = ds_map_create();// { object_or_struct: { alarm_name: alarm , ... } , ... }	// Будильники объекта
+_objects_deactive = ds_map_create();// { object: { alarm_name: alarm , ... } , ... }			// Деактивированные будильники объекта
+
+//room_goto(numb)
+//room_next(numb)
+//room_goto_next()
+//room_goto_previous()
+//room_restart()
+//game_restart()
+
+function replace_room_goto(numb){room_goto(numb);}
+function replace_room_next(numb){room_next(numb);}
+function replace_room_goto_next(){room_goto_next();}
+function replace_room_goto_previous(){room_goto_previous();}
+function replace_room_restart(){room_restart();}
+function replace_game_restart(){game_restart();}
 
 #macro instance_destroy replace_instance_destroy
 #macro macro_instance_destroy instance_destroy
-function replace_instance_destroy(object = self){
-	alarms_object_delete(object);
+function replace_instance_destroy(object = self){// 
+	var _alarm_deactive = _objects_deactive[? object];
+	if(_alarm_deactive != undefined){	
+		ds_map_destroy(_alarm_deactive);
+	}
+	ds_map_delete(_objects_deactive, object);
+	
+	//alarms_object_delete_all(object);// переделать на то что, удалять только те у которых стоит destroyed
+
+	with object{
+		alarms_object_foreach(self, function(_alarm){
+			if(_alarm.destroyed){	
+				with _alarm{
+					var _vfunc = self.deactivated;
+					with (self.link) _vfunc(other.data, other);
+				}
+			
+				_alarm.del();
+			}
+		});
+	}
 
 	macro_instance_destroy(object);
 }
 
 #macro instance_activate_all replace_instance_activate_all
 #macro macro_instance_activate_all instance_activate_all
-function replace_instance_activate_all(){
+function replace_instance_activate_all(){// 
 	macro_instance_activate_all();
 	
 	var object = ds_map_find_first(_objects_deactive);
@@ -66,17 +107,15 @@ function replace_instance_activate_all(){
 
 #macro instance_activate_object replace_instance_activate_object
 #macro macro_instance_activate_object instance_activate_object
-function replace_instance_activate_object(obj){
+function replace_instance_activate_object(obj){// 
 	macro_instance_activate_object(obj);
 	
 	with obj{
-		//alarms_object_resume(self);
+		var _alarms_deactive = _objects_deactive[? self], _alarm_name, _alarm;
 		
-		var _alarms = _objects_deactive[? self], _alarm_name, _alarm;
-		
-		_alarm_name = ds_map_find_first(_alarms);
-		repeat ds_map_size(_alarms){
-			_alarm = _alarms[? _alarm_name];
+		_alarm_name = ds_map_find_first(_alarms_deactive);
+		repeat ds_map_size(_alarms_deactive){
+			_alarm = _alarms_deactive[? _alarm_name];
 			_alarm.resume();
 			
 			with _alarm{
@@ -84,9 +123,9 @@ function replace_instance_activate_object(obj){
 				with (self.link) _vfunc(other.data, other);
 			}
 			
-			_alarm_name = ds_map_find_next(_alarms, _alarm_name);
+			_alarm_name = ds_map_find_next(_alarms_deactive, _alarm_name);
 		}
-		ds_map_clear(_alarms);
+		ds_map_destroy(_alarms_deactive);
 		
 		ds_map_delete(_objects_deactive, self);
 	}
@@ -94,19 +133,19 @@ function replace_instance_activate_object(obj){
 
 #macro instance_activate_region replace_instance_activate_region
 #macro macro_instance_activate_region instance_activate_region
-function replace_instance_activate_region(left, top, width, height, inside){
+function replace_instance_activate_region(left, top, width, height, inside){// 
 	macro_instance_activate_region(left, top, width, height, inside);
 }
 
 #macro instance_deactivate_all replace_instance_deactivate_all
 #macro macro_instance_deactivate_all instance_deactivate_all
-function replace_instance_deactivate_all(notme){
+function replace_instance_deactivate_all(notme){// 
 	
 	ds_map_clear(_objects_deactive);
 	with all{
 		if(!notme || (notme && self.id != other.id)){
 			ds_map_add(_objects_deactive, self, self);
-			alarms_object_stop(self);
+			alarms_object_stop_all(self);
 		}
 	}
 	
@@ -115,11 +154,23 @@ function replace_instance_deactivate_all(notme){
 
 #macro instance_deactivate_object replace_instance_deactivate_object
 #macro macro_instance_deactivate_object instance_deactivate_object
-function replace_instance_deactivate_object(obj){
+function replace_instance_deactivate_object(obj){// 
 	
 	with obj{
-		alarms_object_stop(self);
-		ds_map_add(_objects_deactive, self, self);
+		var _alarms_deactive = ds_map_create();
+		
+		alarms_object_foreach_playing(self, function(_alarm, _alarms_deactive){
+			ds_map_add(_alarms_deactive, _alarm.name, _alarm);
+			
+			with _alarm{
+				var _vfunc = self.deactivated;
+				with (self.link) _vfunc(other.data, other);
+			}
+			
+			_alarm.stop();
+		}, _alarms_deactive);
+		
+		ds_map_add(_objects_deactive, self, _alarms_deactive);
 	}
 	
 	macro_instance_deactivate_object(obj);
@@ -127,7 +178,7 @@ function replace_instance_deactivate_object(obj){
 
 #macro instance_deactivate_region replace_instance_deactivate_region
 #macro macro_instance_deactivate_region instance_deactivate_region
-function replace_instance_deactivate_region(left, top, width, height, inside, notme){
+function replace_instance_deactivate_region(left, top, width, height, inside, notme){// 
 	macro_instance_deactivate_region(left, top, width, height, inside, notme);
 }
 

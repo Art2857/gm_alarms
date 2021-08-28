@@ -10,4 +10,3 @@ alarm_loop_sync(100, function() {
 
 activated = true;
 obj = obj_test.id;
-show_message_async(obj);

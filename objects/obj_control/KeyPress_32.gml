@@ -5,4 +5,4 @@ if(activated){
 	instance_activate_object(obj);
 }
 
-activated=!activated;
+activated = !activated;
