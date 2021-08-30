@@ -42,7 +42,7 @@
 /// @param [setting]
 function alarms_reset_time(){
 	__time = 0;
-	__async_offset = 0;
+	__async_offset = current_time;
 }
 
 function alarm_set_persistent(_alarm, _persistent = true){
