@@ -47,9 +47,9 @@ function alarms_room_end(_func){
 			
 		with _alarm{
 			var _vfunc = self[$ _func];
-			if(_vfunc == undefined){if(!_alarm._persistent){alarm_delete(_alarm);}}else{
+			//if(_vfunc == undefined){if(!_alarm._persistent){alarm_delete(_alarm);}}else{
 				with (self.link) _vfunc(other.data, other);
-			}
+			//}
 		}
 		
 	}, _func);
@@ -105,20 +105,19 @@ function replace_room_restart(){
 #macro game_restart replace_game_restart
 #macro macro_game_restart game_restart
 function replace_game_restart(){
-	//alarms_room_end("func_game_restart");
-	alarms_foreach(function(_alarm){
+	/*alarms_foreach(function(_alarm){
 			
 		with _alarm{
 			var _vfunc = self[$ "func_game_restart"];
-			if(_vfunc == undefined){alarm_delete(_alarm);}else{
+			//if(_vfunc == undefined){alarm_delete(_alarm);}else{
 				with (self.link) _vfunc(other.data, other);
-			}
+			//}
 		}
 		
-	});
-	
-	alarms_reset_time();
+	});*/
+	alarms_room_end("func_game_restart");
 	alarms_object_deactivated_delete();
+	alarms_reset_time();
 	macro_game_restart();
 }
 
@@ -135,7 +134,7 @@ function replace_instance_destroy(object = self){//
 		alarms_object_foreach(self, function(_alarm){
 			if(_alarm.destroyed_instance){
 				with _alarm{
-					var _vfunc = self.deactivated;
+					var _vfunc = self.deactivated;//Чё-то тут явно не так....................
 					with (self.link) _vfunc(other.data, other);
 				}
 			
@@ -159,7 +158,7 @@ function replace_instance_activate_all(){//
 		_alarm_name = ds_map_find_first(_alarms);
 		repeat ds_map_size(_alarms){
 			_alarm = _alarms[? _alarm_name];
-			_alarm.resume();
+			//if(_alarm.activated_resume) _alarm.resume();
 			
 			with _alarm{
 				var _vfunc = self.activated;
@@ -200,7 +199,7 @@ function replace_instance_activate_object(obj){//
 		_alarm_name = ds_map_find_first(_alarms_deactive);
 		repeat ds_map_size(_alarms_deactive){
 			_alarm = _alarms_deactive[? _alarm_name];
-			_alarm.resume();
+			//if(_alarm.activated_resume) _alarm.resume();
 			
 			with _alarm{
 				var _vfunc = self.activated;
@@ -231,14 +230,18 @@ function replace_instance_deactivate_all(notme){//
 			var _alarms_deactive = ds_map_create();
 		
 			alarms_object_foreach_playing(self, function(_alarm, _alarms_deactive){
-				ds_map_add(_alarms_deactive, _alarm.name, _alarm);
+				
 			
 				with _alarm{
 					var _vfunc = self.deactivated;
 					with (self.link) _vfunc(other.data, other);
 				}
 			
-				_alarm.stop();
+				if(_alarm.deactivated_stop){
+					ds_map_add(_alarms_deactive, _alarm.name, _alarm);
+					
+					_alarm.stop();
+				}
 			}, _alarms_deactive);
 		
 			ds_map_add(_objects_deactive, self, _alarms_deactive);
@@ -259,14 +262,16 @@ function replace_instance_deactivate_object(obj){//
 		var _alarms_deactive = ds_map_create();
 		
 		alarms_object_foreach_playing(self, function(_alarm, _alarms_deactive){
-			ds_map_add(_alarms_deactive, _alarm.name, _alarm);
-			
 			with _alarm{
 				var _vfunc = self.deactivated;
 				with (self.link) _vfunc(other.data, other);
 			}
 			
-			_alarm.stop();
+			if(_alarm.deactivated_stop){
+				ds_map_add(_alarms_deactive, _alarm.name, _alarm);
+			
+				_alarm.stop();
+			}
 		}, _alarms_deactive);
 		
 		ds_map_add(_objects_deactive, self, _alarms_deactive);
@@ -281,17 +286,19 @@ function replace_instance_deactivate_region(left, top, width, height, inside, no
 	macro_instance_deactivate_region(left, top, width, height, inside, notme);
 }
 
-globalvar __alarms, __alarmsSync, __alarmsAsync, __minSync, __minAsync, __time, __async_offset, __sync_speed, __async_speed, __current_time;
-__alarms       = ds_map_create();		// Все будильники
-__alarmsSync   = ds_priority_create();	// Активные синхронные будильники
-__minSync      = 0;						// Следующий синхронный будильник(Время)
-__alarmsAsync  = ds_priority_create();	// Асинхронные синхронные будильники
-__minAsync     = 0;						// Следующий асинхронный будильник(Время)
-__time         = 0;						// Кол-во итераций alarm_update
-__async_offset = 0;						// Смещение времени асинхронных будильников
-__sync_speed   = 1;						// Скорость воспроизведения синхронных будильников
-__async_speed  = 1;						// Скорость воспроизведения асинхронных будильников
-__current_time = current_time;			// Реальное время(Асинхронное время)
+globalvar __alarms, __alarmsSync, __alarmsAsync, __minSync, __minAsync, __sync_time, __async_offset, __sync_speed, __async_speed, __async_time;
+__alarms		= ds_map_create();			// Все будильники
+
+__sync_time		= 0;						// Кол-во итераций alarm_update
+__sync_speed	= 1;						// Скорость воспроизведения синхронных будильников
+__alarmsSync	= ds_priority_create();		// Активные синхронные будильники
+__minSync		= 0;						// Следующий синхронный будильник(Время)
+
+__async_time	= current_time;				// Реальное время(Асинхронное время)
+__async_speed	= 1;						// Скорость воспроизведения асинхронных будильников
+__alarmsAsync	= ds_priority_create();		// Асинхронные синхронные будильники
+__minAsync		= 0;						// Следующий асинхронный будильник(Время)
+__async_offset	= current_time;				// Смещение времени асинхронных будильников
 
 // Создаём "Класс" будильника:
 function ClassAlarm() constructor { // Выступает одновременно в виде будильника и таймера
@@ -304,14 +311,19 @@ function ClassAlarm() constructor { // Выступает одновременн
 	self.timer				= 0;							// время таймера, до последнего запуска
 										                
 	self.destroyed			= false;						// Удалить после исполнения колбэка(true) или нет(false)
-	self.destroyed_instance = true;							// Удалить будильник при удалении привязанного объекта
+	self.destroyed_instance = false;						// Удалить будильник при удалении привязанного объекта
 	self.destroyed_callback = false;						// Исполнить колбэк при удалении будильника
-	self.activated			= alarm_default_func;			// Исполнить колбэк при активации объекта
+	
+	self.deactivated_stop = true;							// Останавливать будильник при деактивации
+	//self.activated_resume = true;							// Возобновлять будильник при активации объекта
+	self.activated			= function(data, _alarm){return _alarm.resume();};// Исполнить колбэк при активации объекта
 	self.deactivated		= alarm_default_func;			// Исполнить колбэк при деактивации объекта
-	self.func_room_end			= undefined;//function(_data, _alarm){alarm_delete(_alarm);}// Исполняемая функция, которая сработает если перейти в другую комнату
-	self.func_room_restart		= undefined;//function(_data, _alarm){alarm_delete(_alarm);}//
-	self.func_game_restart		= undefined;//function(_data, _alarm){alarm_delete(_alarm);}//
+	self.func_room_end			= /*undefined;*/function(_data, _alarm){if(!_alarm._persistent){alarm_delete(_alarm);}}// Исполняемая функция, которая сработает если перейти в другую комнату
+	self.func_room_restart		= /*undefined;*/function(_data, _alarm){if(!_alarm._persistent){alarm_delete(_alarm);}}//
+	self.func_game_restart		= /*undefined;*/function(_data, _alarm){alarm_delete(_alarm);}//
+	
 	self._persistent = false;
+	
 	self.func				= alarm_default_func;			// функция, которая сработает при истечении времени
 	self.loop				= false;	                    // true - повторять, false - исполнить один раз
 	self.sync				= true;							/* true - выполняется в шагах игры(время указывается в шагах), 
@@ -384,7 +396,7 @@ function alarm_settings(_alarm, _settings) {
 			break;
 		
 		case "time":
-			alarm_set_duration(_alarm, _value - __time);
+			alarm_set_duration(_alarm, _value - __sync_time);
 			break;
 		
 		case "timeSet":

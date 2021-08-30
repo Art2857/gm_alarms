@@ -41,8 +41,12 @@
 
 /// @param [setting]
 function alarms_reset_time(){
-	__time = 0;
+	__sync_time = 0;
+	__async_time = 0;
 	__async_offset = current_time;
+	
+	__minSync  = 0;
+	__minAsync = 0;
 }
 
 function alarm_set_persistent(_alarm, _persistent = true){
@@ -118,9 +122,9 @@ function alarm_get_difference(_thisAlarm) {// Возвращает разниц�
 	with (_thisAlarm) {
 		if (self.status) {
 			if (self.sync)
-				return (self.time - __time);
+				return (self.time - __sync_time);
 			else
-				return (self.time - current_time);
+				return (self.time - __async_time);
 		}
 		return (self.time - self.timePoint);
 	}
@@ -141,9 +145,9 @@ function alarm_get_lost(_thisAlarm) {// Возвращает время до с�
 	with (_thisAlarm) {
 		if (self.status) {
 			if (self.sync)
-				return max(0, self.time - __time);
+				return max(0, self.time - __sync_time);
 			else
-				return max(0, self.time - current_time);
+				return max(0, self.time - __async_time);
 		}
 		return max(0, self.time- self.timePoint);
 	}
@@ -168,16 +172,16 @@ function alarm_resume(_thisAlarm) {// Запускает будильник
 			if(self.timeSet>0){
 				self.status = true;
 				if (self.sync) {
-					self.time     += __time - self.timePoint;
-					self.timePoint = __time;
+					self.time     += __sync_time - self.timePoint;
+					self.timePoint = __sync_time;
 					if (self.time < __minSync) __minSync = self.time;
 					if (is_undefined(ds_priority_find_priority(__alarmsSync, self)))
 						ds_priority_add(__alarmsSync, self, self.time);
 					else
 						ds_priority_change_priority(__alarmsSync, self, self.time);
 				} else {
-					self.time     += current_time - self.timePoint;
-					self.timePoint = current_time;
+					self.time     += __async_time - self.timePoint;
+					self.timePoint = __async_time;
 					if (self.time < __minAsync) __minAsync = self.time;
 					if (is_undefined(ds_priority_find_priority(__alarmsAsync, self)))
 						ds_priority_add(__alarmsAsync, self, time);
@@ -195,12 +199,12 @@ function alarm_set_duration(_thisAlarm, _argTime=1) {// Устанавливае
 	_argTime = max(_argTime, 1);
 	with (_thisAlarm) {
 		if (self.sync) {
-			self.time = __time + _argTime;
+			self.time = __sync_time + _argTime;
 			if (self.time < __minSync) __minSync = self.time;
 			if (!is_undefined(ds_priority_find_priority(__alarmsSync, self)))
 				ds_priority_change_priority(__alarmsSync, self, self.time);
 		} else {
-			self.time = current_time + _argTime;
+			self.time = __async_time + _argTime;
 			if (self.time < __minAsync) __minAsync = self.time;
 			if (!is_undefined(ds_priority_find_priority(__alarmsAsync, self)))
 				ds_priority_change_priority(__alarmsAsync, self, self.time);
@@ -262,10 +266,10 @@ function alarm_set_sync(_thisAlarm, _argSync = true, _argTime=1) {// Смена 
 	with (_thisAlarm) {
 		if (_argTime != undefined) {
 			if (_argSync) {
-				self.time = __time + _argTime;
+				self.time = __sync_time + _argTime;
 				if (self.time < __minSync) __minSync = self.time;
 			} else {
-				self.time = current_time + _argTime;
+				self.time = __async_time + _argTime;
 				if (self.time < __minAsync) __minAsync = self.time;
 			}
 			self.timeSet = _argTime;
@@ -288,12 +292,12 @@ function alarm_stop(_thisAlarm) {// Останавливает будильни�
 		if (self.status) {
 			self.status = false;
 			if (self.sync) {
-				self.timer    += __time - self.timePoint;
-				self.timePoint = __time;
+				self.timer    += __sync_time - self.timePoint;
+				self.timePoint = __sync_time;
 				ds_priority_delete_value(__alarmsSync, self);
 			} else {
-				self.timer    += current_time - self.timePoint;
-				self.timePoint = current_time;
+				self.timer    += __async_time - self.timePoint;
+				self.timePoint = __async_time;
 				ds_priority_delete_value(__alarmsAsync, self);
 			}
 		}
@@ -324,9 +328,9 @@ function alarm_timer_clear(_thisAlarm) {// Обнуляем таймер буд�
 	with (_thisAlarm) {
 		self.timer = 0;
 		if (self.sync)
-			self.timePoint = __time;
+			self.timePoint = __sync_time;
 		else
-			self.timePoint = current_time;
+			self.timePoint = __async_time;
 	}
 	return _thisAlarm;
 }
@@ -336,9 +340,9 @@ function alarm_timer_get(_thisAlarm) {// Возвращает время тай�
 	with (_thisAlarm) {
 		if (self.status) {
 			if (self.sync)
-				return (self.timer + (__time - self.timePoint));
+				return (self.timer + (__sync_time - self.timePoint));
 			else
-				return (self.timer + (current_time - self.timePoint));
+				return (self.timer + (__async_time - self.timePoint));
 		}
 		return self.timer;
 	}
