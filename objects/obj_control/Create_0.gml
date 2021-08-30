@@ -4,9 +4,12 @@ text = "box";
 f = function(){show_message(text);}
 
 
-alarm_loop_sync(100, function() {
+
+_alarm = alarm_loop_sync(100, function() {
 	show_debug_message(__time);
 });
+alarm_set_persistent(_alarm);
 
-activated = true;
-obj = obj_test.id;
+
+
+obj = obj_test;//.id;

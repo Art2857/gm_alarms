@@ -1,7 +1,6 @@
 //https://vk.com/clubgamemakerpro
 //Обработка будильников
-//_timeJump - скорость синхронных будильников, рекомендуемая скорость 1
-function alarm_update(_timeJump=1) {
+function alarm_update() {
 	//Обработка синхронных будильников
 	if (__time >= __minSync) {
 		while (ds_priority_size(__alarmsSync)) {
@@ -43,19 +42,20 @@ function alarm_update(_timeJump=1) {
 		}
 	}
 	
+	__current_time = (current_time - __async_offset ) * __async_speed;
 	//Обработка асинхронных будильников
-	if (current_time >= __minAsync) {
+	if (__current_time >= __minAsync) {
 		while (ds_priority_size(__alarmsAsync)) {
 			var _alarm = ds_priority_find_min(__alarmsAsync);
 			var _vtime = _alarm.time;
 			var _vfunc = _alarm.func;
 			
-			if (current_time >= _vtime) {
+			if (__current_time >= _vtime) {
 				with (_alarm) {
 					if (self.loop) {
 						if (self.timeSet > 0) {
 							if (self.repeating) {
-								var _rep = ceil((current_time - self.time) / self.timeSet);
+								var _rep = ceil((__current_time - self.time) / self.timeSet);
 								with (self.link) {
 									repeat _rep {
 										_vfunc(other.data, other);
@@ -64,7 +64,7 @@ function alarm_update(_timeJump=1) {
 								self.time += _rep * self.timeSet;
 							} else {
 								with (self.link) _vfunc(other.data, other);
-								self.time = current_time + self.timeSet;
+								self.time = __current_time + self.timeSet;
 							}
 							ds_priority_change_priority(__alarmsAsync, self, self.time);
 						}
@@ -83,5 +83,6 @@ function alarm_update(_timeJump=1) {
 			}
 		}
 	}
-	__time += _timeJump;
+	
+	__time += __sync_speed;
 }

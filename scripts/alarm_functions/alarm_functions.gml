@@ -40,6 +40,16 @@
 */
 
 /// @param [setting]
+function alarms_reset_time(){
+	__time = 0;
+	__async_offset = 0;
+}
+
+function alarm_set_persistent(_alarm, _persistent = true){
+	_alarm._persistent = _persistent;
+	return _alarm;
+}
+
 function alarm_create(/*{setting}*/) {
 	
 	var _thisAlarm = new ClassAlarm(); // Создаём будильник
@@ -69,15 +79,15 @@ function alarm_delete(_thisAlarm) {// Удаляет будильник
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	
 	if(
-	(_thisAlarm.destroyed_callback == 1) ||
-	(_thisAlarm.destroyed_callback == 2 && _thisAlarm.status == true) || 
-	(_thisAlarm.destroyed_callback == 3 && _thisAlarm.status == false)){
+	(_thisAlarm.destroyed_callback == 1) || // будет исполнен колбэк
+	(_thisAlarm.destroyed_callback == 2 && _thisAlarm.status == true) || // если будильник запущен
+	(_thisAlarm.destroyed_callback == 3 && _thisAlarm.status == false)){ // если будильник остановлен
 		with (_thisAlarm) {
 			var _vfunc = _thisAlarm.func;
 			with (self.link) _vfunc(other.data, other);
 		}
 	}else{
-		if(is_method(_thisAlarm.destroyed_callback)){
+		if(is_method(_thisAlarm.destroyed_callback)){ // если установлен собственный будильник
 			var _vfunc = _thisAlarm.destroyed_callback;
 			with (self.link) _vfunc(other.data, other);
 		}
@@ -400,25 +410,23 @@ function alarms_count_playing_async(){// Возвращает кол-во все
 	return ds_priority_size(__alarmsAsync);
 }
 
-function alarms_count_sync(){
-	var _alarms = ds_priority_create(), _alarm, count = 0;
-	ds_priority_copy(_alarms, __alarmsSync);
-	repeat ds_priority_size(_alarms){
-		_alarm = ds_priority_delete_min(_alarms);
+function alarms_count_sync(){// Возвращает кол-во синхронных будильников
+	var count = 0;
+	var _alarm = ds_map_find_first(__alarms);
+	repeat ds_map_size(__alarms){
 		count += alarm_is_sync(_alarm);
+		_alarm = ds_map_find_next(__alarms, _alarm);
 	}
-	ds_priority_destroy(_alarms);
 	return count;
 }
 
-function alarms_count_async(){
-	var _alarms = ds_priority_create(), _alarm, count = 0;
-	ds_priority_copy(_alarms, __alarmsAsync);
-	repeat ds_priority_size(_alarms){
-		_alarm = ds_priority_delete_min(_alarms);
-		count += alarm_is_sync(_alarm);
+function alarms_count_async(){// Возвращает кол-во асинхронных будильников
+	var count = 0;
+	var _alarm = ds_map_find_first(__alarms);
+	repeat ds_map_size(__alarms){
+		count += alarm_is_async(_alarm);
+		_alarm = ds_map_find_next(__alarms, _alarm);
 	}
-	ds_priority_destroy(_alarms);
 	return count;
 }
 
