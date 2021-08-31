@@ -229,7 +229,7 @@ function alarm_set_func(_thisAlarm, _callback) {
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	if (is_method(_callback))     _callback = method_get_index(_callback);
 	//if ((is_numeric(_callback) && !script_exists(_callback)) || !_callback)
-	if (!is_numeric(_callback) && !script_exists(_callback))
+	if (!is_numeric(_callback) || !script_exists(_callback))
 								  _callback = alarm_default_func;
 	_thisAlarm.func = _callback;
 	return _thisAlarm;
