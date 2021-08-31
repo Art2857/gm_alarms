@@ -172,18 +172,18 @@ function alarm_resume(_thisAlarm) {// Запускает будильник
 			if(self.timeSet>0){
 				self.status = true;
 				if (self.sync) {
-					self.time     += __sync_time - self.timePoint;
+					self.time      = self.timeSet + self.timePoint;
 					self.timePoint = __sync_time;
 					if (self.time < __minSync) __minSync = self.time;
-					if (is_undefined(ds_priority_find_priority(__alarmsSync, self)))
+					if (ds_priority_find_priority(__alarmsSync, self) == undefined)
 						ds_priority_add(__alarmsSync, self, self.time);
 					else
 						ds_priority_change_priority(__alarmsSync, self, self.time);
 				} else {
-					self.time     += __async_time - self.timePoint;
+					self.time      = self.timeSet + self.timePoint;
 					self.timePoint = __async_time;
 					if (self.time < __minAsync) __minAsync = self.time;
-					if (is_undefined(ds_priority_find_priority(__alarmsAsync, self)))
+					if (ds_priority_find_priority(__alarmsAsync, self) == undefined)
 						ds_priority_add(__alarmsAsync, self, time);
 					else
 						ds_priority_change_priority(__alarmsAsync, self, self.time);
@@ -198,17 +198,26 @@ function alarm_set_duration(_thisAlarm, _argTime=1) {// Устанавливае
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	_argTime = max(_argTime, 1);
 	with (_thisAlarm) {
-		if (self.sync) {
-			self.time = __sync_time + _argTime;
-			if (self.time < __minSync) __minSync = self.time;
-			if (!is_undefined(ds_priority_find_priority(__alarmsSync, self)))
-				ds_priority_change_priority(__alarmsSync, self, self.time);
-		} else {
-			self.time = __async_time + _argTime;
-			if (self.time < __minAsync) __minAsync = self.time;
-			if (!is_undefined(ds_priority_find_priority(__alarmsAsync, self)))
-				ds_priority_change_priority(__alarmsAsync, self, self.time);
+		if(self.status){
+			if (self.sync) {
+				self.time = __sync_time + _argTime;
+				if (self.time < __minSync) __minSync = self.time;
+				if (ds_priority_find_priority(__alarmsSync, self) != undefined)
+					ds_priority_change_priority(__alarmsSync, self, self.time);
+			} else {
+				self.time = __async_time + _argTime;
+				if (self.time < __minAsync) __minAsync = self.time;
+				if (ds_priority_find_priority(__alarmsAsync, self) != undefined)
+					ds_priority_change_priority(__alarmsAsync, self, self.time);
+			}
+		}else{
+			if(self.sync){
+				self.timePoint = __sync_time;
+			}else{
+				self.timePoint = __async_time;
+			}
 		}
+		
 		self.timeSet = _argTime;
 	}
 	return _thisAlarm;

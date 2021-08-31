@@ -28,15 +28,16 @@ function alarms_object_deactivated_delete(){
 	var object = ds_map_find_first(_objects_deactive);
 	repeat ds_map_size(_objects_deactive){
 		var _alarms = _objects_deactive[? object], _alarm_name, _alarm;
-		
-		_alarm_name = ds_map_find_first(_alarms);
-		repeat ds_map_size(_alarms){
-			_alarm = _alarms[? _alarm_name];
+		if(_alarms != undefined){
+			_alarm_name = ds_map_find_first(_alarms);
+			repeat ds_map_size(_alarms){
+				_alarm = _alarms[? _alarm_name];
 			
-			alarm_delete(_alarm);
-			_alarm_name = ds_map_find_next(_alarms, _alarm_name);
+				alarm_delete(_alarm);
+				_alarm_name = ds_map_find_next(_alarms, _alarm_name);
+			}
+			ds_map_clear(_alarms);
 		}
-		ds_map_clear(_alarms);
 		
 		object = ds_map_find_next(_objects_deactive, object);
 	}
@@ -154,20 +155,21 @@ function replace_instance_activate_all(){//
 	var object = ds_map_find_first(_objects_deactive);
 	repeat ds_map_size(_objects_deactive){
 		var _alarms = _objects_deactive[? object], _alarm_name, _alarm;
-		
-		_alarm_name = ds_map_find_first(_alarms);
-		repeat ds_map_size(_alarms){
-			_alarm = _alarms[? _alarm_name];
-			//if(_alarm.activated_resume) _alarm.resume();
+		if(_alarms != undefined){
+			_alarm_name = ds_map_find_first(_alarms);
+			repeat ds_map_size(_alarms){
+				_alarm = _alarms[? _alarm_name];
+				//if(_alarm.activated_resume) _alarm.resume();
 			
-			with _alarm{
-				var _vfunc = self.activated;
-				with (self.link) _vfunc(other.data, other);
+				with _alarm{
+					var _vfunc = self.activated;
+					with (self.link) _vfunc(other.data, other);
+				}
+				//alarm_delete(_alarm);
+				_alarm_name = ds_map_find_next(_alarms, _alarm_name);
 			}
-			//alarm_delete(_alarm);
-			_alarm_name = ds_map_find_next(_alarms, _alarm_name);
+			ds_map_clear(_alarms);
 		}
-		ds_map_clear(_alarms);
 		
 		/*for(var i = 0; i < array_length(_alarms); i++){
 			_alarm = _alarms[i];
@@ -195,20 +197,21 @@ function replace_instance_activate_object(obj){//
 	
 	with obj{
 		var _alarms_deactive = _objects_deactive[? self], _alarm_name, _alarm;
-		
-		_alarm_name = ds_map_find_first(_alarms_deactive);
-		repeat ds_map_size(_alarms_deactive){
-			_alarm = _alarms_deactive[? _alarm_name];
-			//if(_alarm.activated_resume) _alarm.resume();
+		if(_alarms_deactive != undefined){
+			_alarm_name = ds_map_find_first(_alarms_deactive);
+			repeat ds_map_size(_alarms_deactive){
+				_alarm = _alarms_deactive[? _alarm_name];
+				//if(_alarm.activated_resume) _alarm.resume();
 			
-			with _alarm{
-				var _vfunc = self.activated;
-				with (self.link) _vfunc(other.data, other);
+				with _alarm{
+					var _vfunc = self.activated;
+					with (self.link) _vfunc(other.data, other);
+				}
+			
+				_alarm_name = ds_map_find_next(_alarms_deactive, _alarm_name);
 			}
-			
-			_alarm_name = ds_map_find_next(_alarms_deactive, _alarm_name);
+			ds_map_destroy(_alarms_deactive);
 		}
-		ds_map_destroy(_alarms_deactive);
 		
 		ds_map_delete(_objects_deactive, self);
 	}
