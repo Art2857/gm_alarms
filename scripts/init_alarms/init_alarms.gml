@@ -230,10 +230,13 @@ function replace_instance_deactivate_all(notme){//
 	ds_map_clear(_objects_deactive);
 	with all{
 		if(!notme || (notme && self.id != other.id)){
-			var _alarms_deactive = ds_map_create();
+			var _alarms_deactive;
+			_alarms_deactive = _objects_deactive[? self];
+			if(_alarms_deactive == undefined){
+				var _alarms_deactive = ds_map_create();
+			}
 		
 			alarms_object_foreach_playing(self, function(_alarm, _alarms_deactive){
-				
 			
 				with _alarm{
 					var _vfunc = self.deactivated;
@@ -262,7 +265,11 @@ function replace_instance_deactivate_all(notme){//
 function replace_instance_deactivate_object(obj){// 
 	
 	with obj{
-		var _alarms_deactive = ds_map_create();
+		var _alarms_deactive;
+		_alarms_deactive = _objects_deactive[? self];
+		if(_alarms_deactive == undefined){
+			var _alarms_deactive = ds_map_create();
+		}
 		
 		alarms_object_foreach_playing(self, function(_alarm, _alarms_deactive){
 			with _alarm{
@@ -307,10 +314,10 @@ __async_offset	= current_time;				// Смещение времени асинх�
 function ClassAlarm() constructor { // Выступает одновременно в виде будильника и таймера
 	
 	self.status				= false;						// true - работает, false - остановлен
-	self.time				= 0;							// Время, когда сработает будильник
+	self.time				= __sync_time;					// Время, когда сработает будильник
 	self.timeSet			= 0;							// Через какое время будильник сработает(Каждые ...)
 				         				                
-	self.timePoint			= 0;							// Время, когда будильник был остановлен или запущен
+	self.timePoint			= __sync_time;					// Время, когда будильник был остановлен или запущен
 	self.timer				= 0;							// время таймера, до последнего запуска
 										                
 	self.destroyed			= false;						// Удалить после исполнения колбэка(true) или нет(false)

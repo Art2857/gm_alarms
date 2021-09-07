@@ -109,8 +109,11 @@ function alarm_delete(_thisAlarm) {// Удаляет будильник
 }
 
 function alarm_exists(_thisAlarm) {// Проверяем на существование будильник по его имени
-	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
-	return !is_undefined(__alarms[? _thisAlarm]);
+	if (is_string(_thisAlarm)) { 
+		_thisAlarm = alarm_find(_thisAlarm); 
+		return _thisAlarm != undefined;
+	}
+	return __alarms[? _thisAlarm] != undefined;
 }
 
 function alarm_find(name) {// Возвращает структуру будильника по его установленному имени
@@ -165,30 +168,29 @@ function alarm_replay(_thisAlarm) {// Перезапускает будильн�
 	return _thisAlarm.resume().set(_thisAlarm.timeSet);
 }
 
-function alarm_resume(_thisAlarm) {// Запускает будильник
+function alarm_set_sync(_thisAlarm, _argSync = true, _argTime=1) {// Смена режим будильника и время срабатывания будильника
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	_argTime = max(_argTime, 1);
 	with (_thisAlarm) {
-		if (!self.status) {
-			if(self.timeSet>0){
-				self.status = true;
-				if (self.sync) {
-					self.time      = self.timeSet + self.timePoint;
-					self.timePoint = __sync_time;
-					if (self.time < __minSync) __minSync = self.time;
-					if (ds_priority_find_priority(__alarmsSync, self) == undefined)
-						ds_priority_add(__alarmsSync, self, self.time);
-					else
-						ds_priority_change_priority(__alarmsSync, self, self.time);
-				} else {
-					self.time      = self.timeSet + self.timePoint;
-					self.timePoint = __async_time;
-					if (self.time < __minAsync) __minAsync = self.time;
-					if (ds_priority_find_priority(__alarmsAsync, self) == undefined)
-						ds_priority_add(__alarmsAsync, self, time);
-					else
-						ds_priority_change_priority(__alarmsAsync, self, self.time);
-				}
+		if (_argTime != undefined) {
+			if (_argSync) {
+				self.time = __sync_time + _argTime;
+				self.timePoint = __sync_time;
+				if (self.time < __minSync) __minSync = self.time;
+			} else {
+				self.time = __async_time + _argTime;
+				self.timePoint = __async_time;
+				if (self.time < __minAsync) __minAsync = self.time;
 			}
+			self.timeSet = _argTime;
+		}
+		self.sync = _argSync;
+		
+		if (self.status) {
+			if (_argSync)
+				ds_priority_delete_value(__alarmsAsync, self);
+			else
+				ds_priority_delete_value(__alarmsSync, self);
 		}
 	}
 	return _thisAlarm;
@@ -198,27 +200,67 @@ function alarm_set_duration(_thisAlarm, _argTime=1) {// Устанавливае
 	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
 	_argTime = max(_argTime, 1);
 	with (_thisAlarm) {
-		if(self.status){
-			if (self.sync) {
-				self.time = __sync_time + _argTime;
-				if (self.time < __minSync) __minSync = self.time;
-				if (ds_priority_find_priority(__alarmsSync, self) != undefined)
-					ds_priority_change_priority(__alarmsSync, self, self.time);
-			} else {
-				self.time = __async_time + _argTime;
-				if (self.time < __minAsync) __minAsync = self.time;
-				if (ds_priority_find_priority(__alarmsAsync, self) != undefined)
-					ds_priority_change_priority(__alarmsAsync, self, self.time);
-			}
-		}else{
-			if(self.sync){
-				self.timePoint = __sync_time;
-			}else{
-				self.timePoint = __async_time;
-			}
+		if (self.sync) {
+			self.time = _thisAlarm.timePoint + _argTime;
+			if (self.time < __minSync) __minSync = self.time;
+			if (ds_priority_find_priority(__alarmsSync, self) != undefined)
+				ds_priority_change_priority(__alarmsSync, self, self.time);
+		} else {
+			self.time = _thisAlarm.timePoint + _argTime;
+			if (self.time < __minAsync) __minAsync = self.time;
+			if (ds_priority_find_priority(__alarmsAsync, self) != undefined)
+				ds_priority_change_priority(__alarmsAsync, self, self.time);
 		}
 		
 		self.timeSet = _argTime;
+	}
+	return _thisAlarm;
+}
+
+function alarm_stop(_thisAlarm) {// Останавливает будильник
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	with (_thisAlarm) {
+		if (self.status) {
+			self.status = false;
+			if (self.sync) {
+				self.timer    += __sync_time - self.timePoint;
+				self.timePoint = __sync_time;
+				ds_priority_delete_value(__alarmsSync, self);
+			} else {
+				self.timer    += __async_time - self.timePoint;
+				self.timePoint = __async_time;
+				ds_priority_delete_value(__alarmsAsync, self);
+			}
+		}
+	}
+	return _thisAlarm;
+}
+
+function alarm_resume(_thisAlarm) {// Запускает будильник
+	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
+	with (_thisAlarm) {
+		if (!self.status) {
+			if(self.timeSet>0){
+				self.status = true;
+				if (self.sync) {
+					self.time      = __sync_time + self.time - self.timePoint;
+					self.timePoint = __sync_time;
+					if (self.time < __minSync) __minSync = self.time;
+					if (ds_priority_find_priority(__alarmsSync, self) == undefined)
+						ds_priority_add(__alarmsSync, self, self.time);
+					else
+						ds_priority_change_priority(__alarmsSync, self, self.time);
+				} else {
+					self.time      = __async_time + self.time - self.timePoint;
+					self.timePoint = __async_time;
+					if (self.time < __minAsync) __minAsync = self.time;
+					if (ds_priority_find_priority(__alarmsAsync, self) == undefined)
+						ds_priority_add(__alarmsAsync, self, time);
+					else
+						ds_priority_change_priority(__alarmsAsync, self, self.time);
+				}
+			}
+		}
 	}
 	return _thisAlarm;
 }
@@ -265,51 +307,6 @@ function alarm_set_name(_thisAlarm, _argName) {// Устанавливаем н�
 			}
 		}
 		self.name = _argName;
-	}
-	return _thisAlarm;
-}
-
-function alarm_set_sync(_thisAlarm, _argSync = true, _argTime=1) {// Смена режим будильника и время срабатывания будильника
-	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
-	_argTime = max(_argTime, 1);
-	with (_thisAlarm) {
-		if (_argTime != undefined) {
-			if (_argSync) {
-				self.time = __sync_time + _argTime;
-				if (self.time < __minSync) __minSync = self.time;
-			} else {
-				self.time = __async_time + _argTime;
-				if (self.time < __minAsync) __minAsync = self.time;
-			}
-			self.timeSet = _argTime;
-		}
-		self.sync = _argSync;
-		
-		if (self.status) {
-			if (_argSync)
-				ds_priority_delete_value(__alarmsAsync, self);
-			else
-				ds_priority_delete_value(__alarmsSync, self);
-		}
-	}
-	return _thisAlarm;
-}
-
-function alarm_stop(_thisAlarm) {// Останавливает будильник
-	if (is_string(_thisAlarm)) { _thisAlarm = alarm_find(_thisAlarm); if (is_undefined(_thisAlarm)) return undefined; };
-	with (_thisAlarm) {
-		if (self.status) {
-			self.status = false;
-			if (self.sync) {
-				self.timer    += __sync_time - self.timePoint;
-				self.timePoint = __sync_time;
-				ds_priority_delete_value(__alarmsSync, self);
-			} else {
-				self.timer    += __async_time - self.timePoint;
-				self.timePoint = __async_time;
-				ds_priority_delete_value(__alarmsAsync, self);
-			}
-		}
 	}
 	return _thisAlarm;
 }
@@ -369,18 +366,22 @@ function alarm_timer_reset(_thisAlarm, _time=0) {// Обнуляем тайме�
 }
 
 function alarm_is_playing(_alarm){
+	if (is_string(_alarm)) { _alarm = alarm_find(_alarm); if (is_undefined(_alarm)) return undefined; };
 	return _alarm.status;
 }
 
 function alarm_is_stoped(_alarm){
+	if (is_string(_alarm)) { _alarm = alarm_find(_alarm); if (is_undefined(_alarm)) return undefined; };
 	return !_alarm.status;
 }
 
 function alarm_is_sync(_alarm){
+	if (is_string(_alarm)) { _alarm = alarm_find(_alarm); if (is_undefined(_alarm)) return undefined; };
 	return _alarm.sync;
 }
 
 function alarm_is_async(_alarm){
+	if (is_string(_alarm)) { _alarm = alarm_find(_alarm); if (is_undefined(_alarm)) return undefined; };
 	return !_alarm.sync;
 }
 
