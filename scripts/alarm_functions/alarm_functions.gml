@@ -91,9 +91,11 @@ function alarm_delete(_thisAlarm) {// Удаляет будильник
 			with (self.link) _vfunc(other.data, other);
 		}
 	}else{
-		if(is_method(_thisAlarm.destroyed_callback)){ // если установлен собственный будильник
-			var _vfunc = _thisAlarm.destroyed_callback;
-			with (self.link) _vfunc(other.data, other);
+		with (_thisAlarm) {
+			if(is_method(_thisAlarm.destroyed_callback)){ // если установлен собственный будильник
+				var _vfunc = _thisAlarm.destroyed_callback;
+				with (self.link) _vfunc(other.data, other);
+			}
 		}
 	}
 	
