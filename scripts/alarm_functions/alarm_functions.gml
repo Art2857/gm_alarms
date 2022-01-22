@@ -404,13 +404,33 @@ function alarms_all_resume() {// Возобновляем все будильн�
 	}
 }
 
-function alarms_all_delete() {// Удаляем все будильники
-	var _key = ds_map_find_first(__alarms);
-	var _alarm;
-	repeat ds_map_size(__alarms) {
-		_alarm = __alarms[? _key];
-		_key = ds_map_find_next(__alarms, _key);
-		_alarm.del();
+function alarms_all_delete(_allmode=true) {// Удаляем все будильники
+	var _keys = ds_map_keys_to_array(__alarms);
+	var _size = array_length(_keys);
+	
+	if (_allmode) {
+		
+		var _stacksize = 100;
+		show_debug_message(">> alarms_all_delete попытка рекурсивного удаления");
+	}
+	
+	while (_size > 0) {
+		
+		__alarms[? _keys[--_size]].del();
+		
+		if (_allmode) {
+			if (_stacksize <= 0) {
+				
+				show_debug_message(">> alarms_all_delete не удачное удаления - обнаружено рекурсивное удаления, " +
+					"при глубине рекурсии 100, таймеры порождают сами себя."
+				);
+				return;
+			}
+			
+			-- _stacksize;
+			_keys = ds_map_keys_to_array(__alarms);
+			_size = array_length(_keys);
+		}
 	}
 }
 
